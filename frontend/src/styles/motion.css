@@ -1,0 +1,91 @@
+/* Motion is triggered by navigation, incoming data, focus, or an operation. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Keep the old page opaque beneath the new page's single shutter. */
+  :root.ef-routing::view-transition-group(root) { animation:none; }
+  :root.ef-routing::view-transition-old(root) { animation:none; mix-blend-mode:normal; opacity:1; }
+  :root.ef-routing::view-transition-new(root) { animation:ef-shutter 360ms var(--ef-mech) both; mix-blend-mode:normal; }
+  /* The snapshot must contain finished content, not a second hidden entrance. */
+  .site-route[data-route-revealed] :is(.workspace-heading,.dashboard-metric,.chart-panel,.home-wordmark,.hero-outline,.gateway-hero h2,.hero-description,.auth-introduction,.auth-form-section,.model-plaza-content,.plaza-group-section,.ef-in-drive,.ef-in-power,.ef-in-come,.ef-in-stroke,.distribution-track span) { animation:none !important; }
+  .workspace-heading { animation: ef-power 400ms var(--ef-mech) both; }
+  .dashboard-metric { animation: ef-power 520ms var(--ef-mech) backwards; animation-delay: 120ms; }
+  .dashboard-metric:nth-child(n+5) { animation-delay: 220ms; }
+  .chart-panel { animation: ef-power 520ms var(--ef-mech) 220ms backwards; }
+  .dashboard-metric .metric-label::after { content: ''; height: 2px; width: 32px; background: var(--ef-ink); transform-origin: left; transform: scaleX(.5); transition: transform 400ms var(--ef-mech); }
+  .dashboard-metric:hover .metric-label::after { transform: scaleX(1); }
+  .metric-value .settled-text { background: linear-gradient(var(--ef-signal), var(--ef-signal)) no-repeat; background-size: 0% 100%; transition: background-size 220ms var(--ef-mech), color 220ms var(--ef-mech); }
+  .metric-value:hover .settled-text { background-size: 100% 100%; color: var(--ef-on-signal); }
+  .gateway-hero h2 { animation: ef-wipe-in 420ms var(--ef-mech) 420ms backwards; }
+  .hero-description { animation: ef-power 400ms var(--ef-mech) 420ms backwards; }
+  .auth-introduction { animation: ef-shutter 520ms var(--ef-mech) backwards; }
+  .auth-form-section { animation: ef-power 520ms var(--ef-mech) 100ms backwards; }
+  .model-plaza-content, .plaza-group-section { animation: ef-power 520ms var(--ef-mech) 100ms backwards; }
+
+  /* Dialogs unfold vertically; sheets push in. Vue waits for the paired exit. */
+  .modal-enter-active { transition: opacity 280ms var(--ef-mech); }
+  .modal-leave-active { transition: opacity 180ms var(--ef-mech); }
+  .modal-enter-active .modal-content { transition: clip-path 280ms var(--ef-mech), opacity 280ms var(--ef-mech); }
+  .modal-leave-active .modal-content { transition: clip-path 180ms var(--ef-mech), opacity 180ms var(--ef-mech); }
+  .modal-enter-to .modal-content, .modal-leave-from .modal-content { clip-path:inset(0); opacity:1; }
+  .modal-enter-from .modal-content, .modal-leave-to .modal-content { clip-path: inset(0 0 100% 0); transform: none; opacity: 0; }
+  .select-dropdown-enter-active, .date-picker-dropdown-enter-active, .locale-menu-enter-active { animation: ef-power 280ms var(--ef-mech); }
+  .select-dropdown-leave-active, .date-picker-dropdown-leave-active, .locale-menu-leave-active { animation: ef-shut 180ms var(--ef-mech); }
+  .toast-enter-active, .status-enter-active { animation: ef-wipe-in 280ms var(--ef-mech); }
+  .toast-leave-active, .status-leave-active { animation: ef-wipe-out 180ms var(--ef-mech); }
+  .input-error-text { animation: ef-wipe-in 280ms var(--ef-mech); }
+  .status-mark { transition: transform 200ms var(--ef-snap); }
+  .status-badge:hover .status-mark { transform: scaleY(1.4); }
+  .distribution-track span { transform-origin: left; animation: site-bar-fill 400ms var(--ef-mech) backwards; }
+  .distribution-row.is-interactive, .feature-record { transition: transform 250ms var(--ef-snap); }
+  .distribution-row.is-interactive:hover { transform: translateX(6px); }
+  .table-body tr[data-row-id] td:first-child { background-image: linear-gradient(var(--ef-trace), var(--ef-trace)); background-size: 3px 0%; background-position: left top; background-repeat: no-repeat; transition: background-size 200ms var(--ef-snap); }
+  .table-body tr[data-row-id]:is(:hover,:focus-within) td:first-child { background-size: 3px 100%; }
+  .settings-tab-icon { transition: transform 280ms var(--ef-mech); }
+  .settings-tab-active .settings-tab-icon { transform: translateX(3px); }
+  .toggle-thumb { transition-duration: 280ms !important; }
+  .sidebar-link .sidebar-icon { transition: transform 200ms var(--ef-snap); }
+  .sidebar-link:hover .sidebar-icon { transform: translateX(3px); }
+
+  /* A flat fill wipes under controls; text and icon markup stay intact. */
+  html[data-ef-variant='site'] :is(.btn:not(.btn-danger), .endpoint-strip button, .hero-primary, .hero-secondary) {
+    background-image: linear-gradient(var(--ef-signal),var(--ef-signal)) !important;
+    background-repeat: no-repeat; background-size: 0% 100%;
+    transition: background-size 280ms var(--ef-mech), color 180ms var(--ef-mech), transform 100ms var(--ef-mech);
+  }
+  html[data-ef-variant='site'] :is(.btn:not(.btn-danger), .endpoint-strip button, .hero-primary, .hero-secondary):is(:hover,:focus-visible):not(:disabled) { background-size:100% 100%; color:var(--ef-on-signal); }
+  html[data-ef-variant='site'] .btn-primary:hover:not(:disabled) { background-color: var(--ef-ink); }
+  html[data-ef-variant='site'] .btn-secondary:hover:not(:disabled) { background-color: var(--ef-chip); }
+  html[data-ef-variant='site'] .hero-primary:hover { background-color:var(--ef-ink); }
+  html[data-ef-variant='site'] :is(.hero-secondary,.btn-ghost):hover { background-color:transparent; }
+  html[data-ef-variant='site'] .btn:active:not(:disabled) { transform: translateY(1px) scale(.985); transition-duration: 100ms; }
+  html[data-ef-variant='site'] .operation-done { animation: site-operation-done 600ms var(--ef-mech); }
+}
+@keyframes site-bar-fill { from { transform: scaleX(0); } }
+@keyframes site-operation-done { 0% { background-size:0% 100%; background-position:left center; } 45% { background-size:100% 100%; background-position:left center; } 60% { background-size:100% 100%; background-position:right center; } 100% { background-size:0% 100%; background-position:right center; } }
+/* Busy is a state, not a decorative loop. Existing labels still announce it. */
+html[data-ef-variant='site'] button:is([aria-busy='true'], :has(.animate-spin)) { background-image:var(--ef-hatch) !important; opacity:.75; pointer-events:none; }
+html[data-ef-variant='site'] .animate-spin { animation:none !important; border:0; background-image:var(--ef-hatch); clip-path:inset(25% 0); }
+html[data-ef-variant='site'] svg.animate-spin > * { visibility:hidden; }
+@media (hover: none), (pointer: coarse) {
+  html[data-ef-variant='site'] .btn-primary { background-size:100% 100%; }
+}
+@media (max-width:639px) and (prefers-reduced-motion: no-preference) {
+  .modal-enter-active .modal-content { transition: transform 360ms var(--ef-mech); clip-path:none; }
+  .modal-leave-active .modal-content { transition: transform 240ms var(--ef-mech); clip-path:none; }
+  .modal-enter-active { transition-duration:360ms; }
+  .modal-leave-active { transition-duration:240ms; }
+  .modal-enter-from .modal-content, .modal-leave-to .modal-content { transform:translateY(100dvh); opacity:1; clip-path:none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation:none !important; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-ef-variant='site'] :is(.dropdown-enter-active,.rollback-enter-active,.fade-enter-active) { animation:ef-wipe-in 280ms var(--ef-mech); }
+  html[data-ef-variant='site'] :is(.dropdown-leave-active,.rollback-leave-active,.fade-leave-active) { animation:ef-wipe-out 180ms var(--ef-mech); }
+  html[data-ef-variant='site'] :is(.modal-fade-enter-active,.popup-fade-enter-active,.agreement-fade-enter-active) { animation:ef-power 280ms var(--ef-mech); }
+  html[data-ef-variant='site'] :is(.modal-fade-leave-active,.popup-fade-leave-active,.agreement-fade-leave-active) { animation:ef-shut 180ms var(--ef-mech); }
+  html[data-ef-variant='site'] :is(.dropdown-enter-from,.dropdown-leave-to,.rollback-enter-from,.rollback-leave-to,.popup-fade-enter-from > div,.popup-fade-leave-to > div,.modal-fade-enter-from > div,.modal-fade-leave-to > div,.agreement-fade-enter-from > div,.agreement-fade-leave-to > div,.locale-menu-enter-from,.locale-menu-leave-to,.select-dropdown-enter-from,.select-dropdown-leave-to,.date-picker-dropdown-enter-from,.date-picker-dropdown-leave-to) { transform:none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .table-body tr[data-row-id].cursor-pointer { transition:transform 250ms var(--ef-snap); }
+  .table-body tr[data-row-id].cursor-pointer:active { transform:translateX(6px); }
+}

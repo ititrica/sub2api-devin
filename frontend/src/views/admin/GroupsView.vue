@@ -141,24 +141,24 @@
               :class="[
                 'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium',
                 value === 'anthropic'
-                  ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                  ? 'bg-brand-orange-100 text-brand-orange-700 dark:bg-brand-orange-900/30 dark:text-brand-orange-400'
                   : value === 'openai'
-                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                    ? 'bg-brand-emerald-100 text-brand-emerald-700 dark:bg-brand-emerald-900/30 dark:text-brand-emerald-400'
                     : value === 'antigravity'
-                      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                      ? 'bg-brand-purple-100 text-brand-purple-700 dark:bg-brand-purple-900/30 dark:text-brand-purple-400'
                       : value === 'grok'
-                        ? 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100'
+                        ? 'bg-brand-zinc-200 text-brand-zinc-800 dark:bg-brand-zinc-700 dark:text-brand-zinc-100'
                         : value === 'kimi'
-                          ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'
+                          ? 'bg-brand-pink-100 text-brand-pink-700 dark:bg-brand-pink-900/30 dark:text-brand-pink-400'
                           : value === 'zhipu'
-                            ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                            ? 'bg-brand-indigo-100 text-brand-indigo-700 dark:bg-brand-indigo-900/30 dark:text-brand-indigo-400'
                             : value === 'deepseek'
-                              ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
+                              ? 'bg-brand-teal-100 text-brand-teal-700 dark:bg-brand-teal-900/30 dark:text-brand-teal-400'
                               : value === 'minimax'
-                                ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'
+                                ? 'bg-brand-rose-100 text-brand-rose-700 dark:bg-brand-rose-900/30 dark:text-brand-rose-400'
                               : value === 'opencode_go'
-                                ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
-                                : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                                ? 'bg-brand-amber-100 text-brand-amber-800 dark:bg-brand-amber-900/30 dark:text-brand-amber-300'
+                                : 'bg-brand-blue-100 text-brand-blue-700 dark:bg-brand-blue-900/30 dark:text-brand-blue-400',
               ]"
             >
               <PlatformIcon :platform="value" size="xs" />
@@ -3818,24 +3818,24 @@
                   :class="[
                     'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium',
                     group.platform === 'anthropic'
-                      ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                      ? 'bg-brand-orange-100 text-brand-orange-700 dark:bg-brand-orange-900/30 dark:text-brand-orange-400'
                       : group.platform === 'openai'
-                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                        ? 'bg-brand-emerald-100 text-brand-emerald-700 dark:bg-brand-emerald-900/30 dark:text-brand-emerald-400'
                         : group.platform === 'antigravity'
-                          ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                          ? 'bg-brand-purple-100 text-brand-purple-700 dark:bg-brand-purple-900/30 dark:text-brand-purple-400'
                           : group.platform === 'grok'
-                            ? 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100'
+                            ? 'bg-brand-zinc-200 text-brand-zinc-800 dark:bg-brand-zinc-700 dark:text-brand-zinc-100'
                             : group.platform === 'kimi'
-                              ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'
+                              ? 'bg-brand-pink-100 text-brand-pink-700 dark:bg-brand-pink-900/30 dark:text-brand-pink-400'
                               : group.platform === 'zhipu'
-                                ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+                                ? 'bg-brand-indigo-100 text-brand-indigo-700 dark:bg-brand-indigo-900/30 dark:text-brand-indigo-400'
                                 : group.platform === 'deepseek'
-                                  ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
+                                  ? 'bg-brand-teal-100 text-brand-teal-700 dark:bg-brand-teal-900/30 dark:text-brand-teal-400'
                                   : group.platform === 'minimax'
-                                    ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'
+                                    ? 'bg-brand-rose-100 text-brand-rose-700 dark:bg-brand-rose-900/30 dark:text-brand-rose-400'
                                   : group.platform === 'opencode_go'
-                                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
-                                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+                                    ? 'bg-brand-amber-100 text-brand-amber-800 dark:bg-brand-amber-900/30 dark:text-brand-amber-300'
+                                    : 'bg-brand-blue-100 text-brand-blue-700 dark:bg-brand-blue-900/30 dark:text-brand-blue-400',
                   ]"
                 >
                   {{ t("admin.groups.platforms." + group.platform, platformLabel(group.platform)) }}

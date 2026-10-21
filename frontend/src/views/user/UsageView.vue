@@ -1,30 +1,26 @@
 <template>
   <AppLayout>
-    <div class="space-y-6">
-      <UsageStatsCards :stats="usageStats" :show-account-cost="false" :strike-standard-cost="true" />
-
-      <div class="space-y-4">
-        <div class="card p-4">
-          <div class="flex flex-wrap items-center gap-4">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.dashboard.timeRange') }}:</span>
-              <DateRangePicker
-                v-model:start-date="startDate"
-                v-model:end-date="endDate"
-                @change="onDateRangeChange"
-              />
-            </div>
-            <div class="ml-auto flex items-center gap-2">
-              <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('admin.dashboard.granularity') }}:</span>
-              <div class="w-28">
-                <Select v-model="granularity" :options="granularityOptions" @change="loadChartData" />
-              </div>
-            </div>
+    <div class="usage-page">
+      <section class="usage-overview">
+        <div class="usage-toolbar">
+          <div><p class="ef-eyebrow">// PERIOD SUMMARY</p><h2>{{ t('common.analytics.analysis') }}</h2></div>
+          <div class="usage-time-controls">
+            <DateRangePicker v-model:start-date="startDate" v-model:end-date="endDate" @change="onDateRangeChange" />
+            <Select v-model="granularity" :options="granularityOptions" :aria-label="t('admin.dashboard.granularity')" @change="loadChartData" />
           </div>
         </div>
-
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <ModelDistributionChart
+      <UsageStatsCards :stats="usageStats" :show-account-cost="false" :strike-standard-cost="true" />
+      </section>
+      <TokenUsageTrend :trend-data="trendData" :loading="chartsLoading" />
+      <section class="usage-distribution" :aria-label="t('common.analytics.distribution')">
+        <header class="usage-distribution-heading">
+          <div><p class="ef-eyebrow">// DISTRIBUTION</p><h2>{{ t('common.analytics.distribution') }}</h2></div>
+          <div class="analysis-tabs" role="tablist" :aria-label="t('common.analytics.distribution')">
+            <button v-for="tab in analysisTabs" :key="tab.key" type="button" role="tab" :id="`analysis-tab-${tab.key}`" :aria-selected="analysisTab === tab.key" aria-controls="usage-analysis-panel" :tabindex="analysisTab === tab.key ? 0 : -1" :class="{ 'is-active': analysisTab === tab.key }" @click="analysisTab = tab.key" @keydown="onAnalysisKeydown($event, tab.key)">{{ tab.label }}</button>
+          </div>
+        </header>
+        <div id="usage-analysis-panel" role="tabpanel" :aria-labelledby="`analysis-tab-${analysisTab}`">
+          <ModelDistributionChart v-show="analysisTab === 'models'"
             v-model:metric="modelDistributionMetric"
             :model-stats="requestedModelStats"
             :loading="modelStatsLoading"
@@ -35,7 +31,7 @@
             :start-date="startDate"
             :end-date="endDate"
           />
-          <GroupDistributionChart
+          <GroupDistributionChart v-show="analysisTab === 'groups'"
             v-model:metric="groupDistributionMetric"
             :group-stats="groupStats"
             :loading="chartsLoading"
@@ -45,10 +41,7 @@
             :start-date="startDate"
             :end-date="endDate"
           />
-        </div>
-
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <EndpointDistributionChart
+          <EndpointDistributionChart v-show="analysisTab === 'endpoints'"
             v-model:source="endpointDistributionSource"
             v-model:metric="endpointDistributionMetric"
             :endpoint-stats="inboundEndpointStats"
@@ -62,10 +55,10 @@
             :start-date="startDate"
             :end-date="endDate"
           />
-          <TokenUsageTrend :trend-data="trendData" :loading="chartsLoading" />
         </div>
-      </div>
-
+      </section>
+      <section class="usage-records">
+        <header class="usage-records-heading"><div><p class="ef-eyebrow">// REQUEST DETAILS</p><h2>{{ t('common.analytics.records') }}</h2></div><span>{{ pagination.total.toLocaleString() }} / {{ t('common.total') }}</span></header>
       <div class="card p-6">
         <div class="flex flex-wrap items-end justify-between gap-4">
           <div v-if="activeTab === 'errors'" class="flex flex-1 flex-wrap items-end gap-4">
@@ -213,6 +206,7 @@
         @update:pageSize="onErrorPageSize"
         @ipGeoBatchFailed="handleIpGeoBatchFailed"
       />
+      </section>
     </div>
   </AppLayout>
 
@@ -256,6 +250,25 @@ import type { Column } from '@/components/common/types'
 import { COMMON_ERROR_STATUS_CODES } from '@/utils/errorBadges'
 
 const { t } = useI18n()
+const analysisTab = ref('models')
+const analysisTabs = computed(() => [
+  { key: 'models', label: t('admin.dashboard.model') },
+  { key: 'groups', label: t('admin.dashboard.group') },
+  { key: 'endpoints', label: t('usage.endpoint') },
+])
+function onAnalysisKeydown(event: KeyboardEvent, key: string) {
+  const keys = analysisTabs.value.map(tab => tab.key)
+  let next = keys.indexOf(key)
+  if (event.key === 'ArrowRight') next = (next + 1) % keys.length
+  else if (event.key === 'ArrowLeft') next = (next - 1 + keys.length) % keys.length
+  else if (event.key === 'Home') next = 0
+  else if (event.key === 'End') next = keys.length - 1
+  else return
+  event.preventDefault()
+  analysisTab.value = keys[next]
+  document.getElementById(`analysis-tab-${keys[next]}`)?.focus()
+}
+
 const appStore = useAppStore()
 
 type DistributionMetric = 'tokens' | 'actual_cost'
@@ -915,3 +928,5 @@ watch(endpointDistributionSource, () => {
   // Endpoint source switching is handled by the chart component using already loaded stats.
 })
 </script>
+
+<style scoped src="../../styles/usage-analysis.css"></style>

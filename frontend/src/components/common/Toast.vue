@@ -1,23 +1,16 @@
 <template>
   <Teleport to="body">
     <div
-      class="pointer-events-none fixed right-4 top-4 z-[9999] space-y-3"
+      class="site-toast-stack pointer-events-none fixed right-4 top-4 z-[9999] space-y-3"
       aria-live="polite"
       aria-atomic="true"
     >
-      <TransitionGroup
-        enter-active-class="transition ease-out duration-300"
-        enter-from-class="opacity-0 translate-x-full"
-        enter-to-class="opacity-100 translate-x-0"
-        leave-active-class="transition ease-in duration-200"
-        leave-from-class="opacity-100 translate-x-0"
-        leave-to-class="opacity-0 translate-x-full"
-      >
+      <TransitionGroup name="toast">
         <div
           v-for="toast in toasts"
           :key="toast.id"
           :class="[
-            'pointer-events-auto min-w-[320px] max-w-md overflow-hidden rounded-lg shadow-lg',
+            'site-toast pointer-events-auto overflow-hidden',
             'bg-white dark:bg-dark-800',
             'border-l-4',
             getBorderColor(toast.type)
@@ -26,7 +19,7 @@
           <div class="p-4">
             <div class="flex items-start gap-3">
               <!-- Icon -->
-              <div class="mt-0.5 flex-shrink-0">
+              <div class="site-toast-flag mt-0.5 flex-shrink-0">
                 <Icon
                   :name="getToastIconName(toast.type)"
                   size="md"
@@ -77,13 +70,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
+import { completeOperation } from '@/utils/operationFeedback'
 import Icon from '@/components/icons/Icon.vue'
 import { useAppStore } from '@/stores/app'
 
 const appStore = useAppStore()
 
 const toasts = computed(() => appStore.toasts)
+watch(() => toasts.value.filter(toast => toast.type === 'success').map(toast => toast.id), (ids, previous) => {
+  if (ids.some(id => !previous.includes(id))) completeOperation()
+})
 
 const getToastIconName = (type: string): 'checkCircle' | 'xCircle' | 'exclamationTriangle' | 'infoCircle' => {
   switch (type) {
@@ -99,35 +96,9 @@ const getToastIconName = (type: string): 'checkCircle' | 'xCircle' | 'exclamatio
   }
 }
 
-const getIconColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    success: 'text-green-500',
-    error: 'text-red-500',
-    warning: 'text-yellow-500',
-    info: 'text-blue-500'
-  }
-  return colors[type] || colors.info
-}
-
-const getBorderColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    success: 'border-green-500',
-    error: 'border-red-500',
-    warning: 'border-yellow-500',
-    info: 'border-blue-500'
-  }
-  return colors[type] || colors.info
-}
-
-const getProgressBarColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    success: 'bg-green-500',
-    error: 'bg-red-500',
-    warning: 'bg-yellow-500',
-    info: 'bg-blue-500'
-  }
-  return colors[type] || colors.info
-}
+const getIconColor = (_type: string): string => 'text-current'
+const getBorderColor = (_type: string): string => 'site-toast-border'
+const getProgressBarColor = (_type: string): string => 'site-toast-progress'
 
 const removeToast = (id: string) => {
   appStore.hideToast(id)
@@ -135,19 +106,25 @@ const removeToast = (id: string) => {
 </script>
 
 <style scoped>
+.site-toast-stack { width: min(420px, calc(100vw - 32px)); }
+.site-toast { width: 100%; border: 1px solid var(--ef-rule); border-top: 3px solid var(--ef-ink); }
+.site-toast-flag { padding: 4px; background: var(--ef-signal); color: var(--ef-on-signal); }
+.site-toast-progress { background: var(--ef-ink); }
+
 .toast-progress {
   width: 100%;
   animation-name: toast-progress-shrink;
   animation-timing-function: linear;
   animation-fill-mode: forwards;
+  transform-origin: left;
 }
 
 @keyframes toast-progress-shrink {
   from {
-    width: 100%;
+    transform: scaleX(1);
   }
   to {
-    width: 0%;
+    transform: scaleX(0);
   }
 }
 </style>

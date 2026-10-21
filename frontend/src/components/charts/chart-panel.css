@@ -1,0 +1,26 @@
+.chart-panel { min-width: 0; padding: 24px; background: var(--ef-panel); border-top: 2px solid var(--ef-ink); border-bottom: 1px solid var(--ef-rule); }
+.chart-panel-heading { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.chart-panel-heading > h3 { font-size: 15px; font-weight: 650; line-height: 1.6; }
+.chart-panel-heading > h3::before { content: '//'; margin-right: 8px; color: var(--ef-ink-2); font-family: var(--ef-font-ui); }
+.distribution-content { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.2fr); gap: 32px; align-items: start; }
+.distribution-table-scroll { min-width: 0; max-height: 350px; overflow: auto; overscroll-behavior: contain; border-left: 1px solid var(--ef-rule); padding-left: 24px; }
+.chart-panel table { width: 100%; min-width: 380px; font-variant-numeric: tabular-nums; }
+.chart-panel th { position: sticky; top: 0; z-index: 1; background: var(--ef-panel); color: var(--ef-ink-2); font-size: 10px; font-weight: 500; white-space: nowrap; padding: 0 8px 12px; text-align: right; }
+.chart-panel th:first-child { text-align: left; }
+.chart-panel td { padding: 12px 8px; border-top: 1px solid var(--ef-rule); font-size: 12px; }
+.chart-panel td:first-child { max-width: 190px; }
+.chart-toggle { min-height: 34px; padding: 6px 12px; font-size: 11px; font-weight: 600; color: var(--ef-ink-2); }
+.chart-toggle-active { color: var(--ef-panel); background: var(--ef-ink); }
+.chart-toggle:focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
+.chart-empty { border: 1px dashed var(--ef-rule); background-image: repeating-linear-gradient(-45deg, transparent 0 7px, color-mix(in srgb, var(--ef-rule) 40%, transparent) 7px 8px); }
+@media (max-width: 1100px) {
+  .distribution-content { grid-template-columns: minmax(180px, .8fr) minmax(0, 1.2fr); gap: 20px; }
+  .distribution-table-scroll { padding-left: 16px; }
+}
+@media (max-width: 700px) {
+  .chart-panel { padding: 20px 16px; }
+  .chart-panel-heading { gap: 12px; }
+  .chart-toggle { min-height: 44px; padding-inline: 10px; }
+  .distribution-content { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .distribution-table-scroll { border-left: 0; border-top: 1px solid var(--ef-rule); padding: 16px 0 0; max-height: 260px; }
+}

@@ -2,7 +2,7 @@
 
 - 访问地址：<http://127.0.0.1:9201>
 - Compose 项目：`sub2api-devin-local`
-- 应用镜像：`local/sub2api-devin:20261020`
+- 应用镜像：`local/sub2api-devin:endfield-20261021-r2`
 - 初始管理员邮箱：`.env` 中的 `ADMIN_EMAIL`。
 - 初始密码：本目录 `.env` 中的 `ADMIN_PASSWORD`。
 
@@ -24,7 +24,18 @@ docker compose -p sub2api-devin-local --env-file .env -f compose.yaml up -d --bu
 
 ## 管理
 
-在本目录打开 PowerShell：
+macOS / Linux：
+
+```bash
+./manage.sh status
+./manage.sh start
+./manage.sh stop
+./manage.sh restart
+./manage.sh logs
+./manage.sh rebuild
+```
+
+Windows PowerShell：
 
 ```powershell
 .\manage.ps1 status
@@ -61,3 +72,12 @@ docker compose -p sub2api-devin-local --env-file .env -f compose.yaml up -d --bu
 使用 Antigravity 时请设置 `ANTIGRAVITY_OAUTH_CLIENT_ID` 和 `ANTIGRAVITY_OAUTH_CLIENT_SECRET`；使用 Gemini CLI / Code Assist / Google One 时请设置 `GEMINI_CLI_OAUTH_CLIENT_ID` 和 `GEMINI_CLI_OAUTH_CLIENT_SECRET`。需要使用获准支持相应服务和 scopes 的客户端凭据；普通新建的 Google 客户端不保证能访问这些服务。
 
 独立 Docker 配置已传递上述可选环境变量；请将真实值保存在 `.env`，不要提交到 Git。AI Studio 仍可使用项目原有的自定义 OAuth 客户端配置。
+
+
+## 本次界面更新（2026-10-21）
+
+用量趋势采用面积折线，支持 Token、请求数、费用切换，悬浮提示显示输入、输出、缓存与计费明细。仪表盘与使用记录保留日期、粒度、分布和记录查询功能。
+
+首页、页面导航、设置切换、弹窗、菜单、数据读数、结果列表和操作提示采用统一的短时过渡；深浅主题从切换按钮展开。系统开启“减少动态效果”后直接显示最终内容。
+
+本实例已替换默认品牌图片与语言图标，隐藏侧栏滚动条，并移除用户仪表盘的“最近使用”和“快捷操作”。站点后台配置的名称与品牌图仍然优先。

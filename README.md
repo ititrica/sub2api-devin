@@ -22,7 +22,7 @@ CLIProxyAPI 参考版本为 `ae3ee3be303fb07fb8173279923413005bf32177`。
 
 <div align="center">
 
-<img src="assets/logo.svg" alt="Sub2API Logo" width="128" />
+<img src="assets/logo.png" alt="Sub2API Logo" width="128" />
 
 # Sub2API
 

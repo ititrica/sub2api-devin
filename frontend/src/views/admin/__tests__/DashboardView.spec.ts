@@ -12,7 +12,7 @@ const { getSnapshotV2, getUserUsageTrend, getUserSpendingRanking } = vi.hoisted(
 }))
 
 vi.mock('vue-chartjs', () => ({
-  Line: { name: 'Line', props: ['data', 'options'], template: '<div class="line-chart" />' }
+  Bar: { name: 'Bar', props: ['data', 'options'], template: '<div class="line-chart" />' }
 }))
 
 vi.mock('@/api/admin', () => ({
@@ -135,7 +135,7 @@ describe('admin DashboardView', () => {
     await wrapper.findAll('button').find(button => button.text() === 'admin.dashboard.actualSpending')!.trigger('click')
     expect(getUserUsageTrend).toHaveBeenCalledWith(expect.objectContaining({ metric: 'actual_cost', limit: 12 }))
     await flushPromises()
-    const chart = wrapper.findComponent({ name: 'Line' })
+    const chart = wrapper.findComponent({ name: 'Bar' })
     expect(chart.props('data').datasets[0].data).toEqual([5])
     expect(chart.props('options').scales.y.ticks.callback(5)).toBe('$5.00')
     resolveTokens({ trend: [{ date: '2026-01-01', user_id: 1, username: 'tokens', email: '', requests: 1, tokens: 100, cost: 1, actual_cost: 1 }] })

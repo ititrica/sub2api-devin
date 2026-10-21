@@ -1,29 +1,18 @@
 <template>
-  <button
-    type="button"
-    @click="toggle"
-    class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-dark-800"
-    :class="[modelValue ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600']"
-    role="switch"
-    :aria-checked="modelValue"
-  >
-    <span
-      class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
-      :class="[modelValue ? 'translate-x-5' : 'translate-x-0']"
-    />
+  <button type="button" class="site-toggle" :class="{ 'is-on': modelValue }" :disabled="disabled" role="switch" :aria-checked="modelValue" @click="toggle">
+    <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
   </button>
 </template>
-
 <script setup lang="ts">
-const props = defineProps<{
-  modelValue: boolean
-}>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void
-}>()
-
-function toggle() {
-  emit('update:modelValue', !props.modelValue)
-}
+const props = withDefaults(defineProps<{ modelValue: boolean; disabled?: boolean }>(), { disabled: false })
+const emit = defineEmits<{ (e: 'update:modelValue', value: boolean): void }>()
+function toggle() { if (!props.disabled) emit('update:modelValue', !props.modelValue) }
 </script>
+<style scoped>
+.site-toggle { display:inline-flex; align-items:center; width:48px; height:44px; flex-shrink:0; background:transparent; }
+.toggle-track { display:block; position:relative; width:44px; height:24px; background:var(--ef-chip); border:1px solid var(--ef-rule); transition:background 200ms var(--ef-mech); }
+.toggle-thumb { position:absolute; top:3px; left:3px; width:16px; height:16px; background:var(--ef-ink-2); transition:transform 200ms var(--ef-mech); }
+.is-on .toggle-track { background:var(--ef-signal); border-color:transparent; }
+.is-on .toggle-thumb { transform:translateX(20px); background:var(--ef-on-signal); }
+.site-toggle:disabled { cursor:not-allowed; opacity:.45; }
+</style>

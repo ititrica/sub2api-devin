@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useChartTheme } from '@/components/charts/useChartTheme'
 import { useI18n } from 'vue-i18n'
 import {
   Chart as ChartJS,
@@ -44,12 +45,7 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-const colors = [
-  ['rgb(59, 130, 246)', 'rgba(59, 130, 246, 0.1)'],
-  ['rgb(168, 85, 247)', 'rgba(168, 85, 247, 0.1)'],
-  ['rgb(245, 158, 11)', 'rgba(245, 158, 11, 0.1)'],
-  ['rgb(239, 68, 68)', 'rgba(239, 68, 68, 0.1)'],
-]
+const chartTheme = useChartTheme()
 
 const chartData = computed(() => {
   if (!props.data || props.data.length === 0) return null
@@ -58,26 +54,29 @@ const chartData = computed(() => {
     labels: props.data.map(d => d.date),
     datasets: [
       ...currencies.map((currency, index) => {
-        const [borderColor, backgroundColor] = colors[index % colors.length]
+        const borderColor = chartTheme.value.series(index)
+        const backgroundColor = 'transparent'
         return {
           label: `${currency} ${t('payment.admin.revenue')}`,
           data: props.data.map(day => day.amount[currency] || 0),
           borderColor,
           backgroundColor,
-          fill: true,
-          tension: 0.3,
-          pointRadius: 3,
+          fill: false,
+          borderDash: index % 2 ? [6, 3] : [],
+          tension: 0,
+          pointRadius: 0,
           pointHoverRadius: 5,
         }
       }),
       {
         label: t('payment.admin.orderCount'),
         data: props.data.map(d => d.count),
-        borderColor: 'rgb(16, 185, 129)',
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderColor: chartTheme.value.ink,
+        backgroundColor: 'transparent',
+        borderDash: [2, 3],
         fill: false,
-        tension: 0.3,
-        pointRadius: 3,
+        tension: 0,
+        pointRadius: 0,
         pointHoverRadius: 5,
         yAxisID: 'y1',
       }
@@ -85,27 +84,33 @@ const chartData = computed(() => {
   }
 })
 
-const chartOptions = {
+const chartOptions = computed(() => ({
+  animation: chartTheme.value.animation,
   responsive: true,
   maintainAspectRatio: false,
   interaction: { mode: 'index' as const, intersect: false },
   scales: {
+    x: { ticks: { color: chartTheme.value.text }, grid: { color: chartTheme.value.grid } },
     y: {
+      ticks: { color: chartTheme.value.text },
       type: 'linear' as const,
       display: true,
       position: 'left' as const,
-      title: { display: true, text: t('payment.admin.revenue') },
+      grid: { color: chartTheme.value.grid },
+      title: { display: true, color: chartTheme.value.text, text: t('payment.admin.revenue') },
     },
     y1: {
+      ticks: { color: chartTheme.value.text },
       type: 'linear' as const,
       display: true,
       position: 'right' as const,
-      title: { display: true, text: t('payment.admin.orderCount') },
+      title: { display: true, color: chartTheme.value.text, text: t('payment.admin.orderCount') },
       grid: { drawOnChartArea: false },
     }
   },
   plugins: {
-    legend: { position: 'top' as const },
+    legend: { position: 'top' as const, labels: { color: chartTheme.value.text, usePointStyle: true, pointStyle: 'rect' } },
+    tooltip: { ...chartTheme.value.tooltip },
   }
-}
+}))
 </script>

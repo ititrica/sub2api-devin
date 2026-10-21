@@ -3,13 +3,13 @@ name: sub2api-devin-local
 # Isolated local deployment. Do not combine with another compose file.
 services:
   sub2api:
-    image: local/sub2api-devin:20261020
+    image: local/sub2api-devin:endfield-20261021-r3
     build:
       context: ../..
       dockerfile: Dockerfile
       args:
-        VERSION: devin-local-20261020
-        COMMIT: 8f2cbb5-devin
+        VERSION: endfield-local-20261021-r3
+        COMMIT: local-endfield-r3
         NPM_CONFIG_REGISTRY: https://registry.npmjs.org
     restart: unless-stopped
     security_opt:

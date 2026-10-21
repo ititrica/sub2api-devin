@@ -12,13 +12,14 @@
         :key="method.type"
         type="button"
         :title="methodLabel(method)"
+        :aria-pressed="selected === method.type"
         :disabled="!method.available"
         :class="[
-          'relative flex h-[60px] min-w-0 flex-col items-center justify-center rounded-lg border px-3 transition-all',
+          'payment-method relative flex h-[60px] min-w-0 flex-col items-center justify-center rounded-lg border px-3 transition-all',
           !method.available
             ? 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-50 dark:border-dark-700 dark:bg-dark-800/50'
             : selected === method.type
-              ? methodSelectedClass(method.type)
+              ? methodSelectedClass()
               : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 dark:border-dark-600 dark:bg-dark-800 dark:text-gray-200 dark:hover:border-dark-500',
         ]"
         @click="method.available && emit('select', method.type)"
@@ -98,11 +99,15 @@ function methodLabel(method: PaymentMethodOption): string {
   return method.display_name || t(`payment.methods.${method.type}`, method.type)
 }
 
-function methodSelectedClass(type: string): string {
-  if (isBuiltInAlipayMethod(type)) return 'border-[#02A9F1] bg-blue-50 text-gray-900 shadow-sm dark:bg-blue-950 dark:text-gray-100'
-  if (isBuiltInWxpayMethod(type)) return 'border-[#09BB07] bg-green-50 text-gray-900 shadow-sm dark:bg-green-950 dark:text-gray-100'
-  if (type === 'stripe') return 'border-[#676BE5] bg-indigo-50 text-gray-900 shadow-sm dark:bg-indigo-950 dark:text-gray-100'
-  if (type === 'airwallex') return 'border-[#FF6B3D] bg-orange-50 text-gray-900 shadow-sm dark:border-[#FF8E3C] dark:bg-orange-950 dark:text-gray-100'
-  return 'border-primary-500 bg-primary-50 text-gray-900 shadow-sm dark:bg-primary-950 dark:text-gray-100'
+function methodSelectedClass(): string {
+  return 'payment-method-selected border-primary-500'
 }
 </script>
+
+<style scoped>
+.payment-method { padding-right: calc(12px + var(--ef-cut)); clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--ef-cut)), calc(100% - var(--ef-cut)) 100%, 0 100%); }
+.payment-method-selected { background: var(--ef-signal); color: var(--ef-on-signal); font-weight: 700; }
+.payment-method-selected [data-testid='payment-method-label'] { text-decoration: underline; text-underline-offset: 4px; }
+.payment-method-selected [data-testid='payment-method-label'] + span { color: var(--ef-on-signal); }
+.payment-method:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; }
+</style>

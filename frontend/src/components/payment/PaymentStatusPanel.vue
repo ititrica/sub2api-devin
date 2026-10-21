@@ -81,13 +81,13 @@
           <div class="flex flex-col items-center space-y-4 py-4 text-center">
             <div
               v-if="deepLinkState === 'launching'"
-              class="h-10 w-10 animate-spin rounded-full border-4 border-[#00AEEF] border-t-transparent"
+              class="h-10 w-10 animate-spin rounded-full border-4 border-current border-t-transparent"
             ></div>
             <div
               v-else
               class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-950/30"
             >
-              <Icon name="checkCircle" size="lg" class="text-[#00AEEF]" />
+              <Icon name="checkCircle" size="lg" class="text-current" />
             </div>
             <p class="text-lg font-semibold text-gray-900 dark:text-white">
               {{ deepLinkState === 'backgrounded' ? t('payment.qr.alipayContinueInApp') : t('payment.qr.alipayOpening') }}
@@ -301,17 +301,8 @@ const isWxpay = computed(() => isBuiltInWxpayMethod(props.paymentType))
 const isMobileAlipayDeepLink = computed(() => props.mobileAlipayDeepLink === true && isAlipay.value && !!qrUrl.value)
 const showQRCode = computed(() => !!qrUrl.value && (!isMobileAlipayDeepLink.value || deepLinkFallbackVisible.value))
 
-const qrBorderClass = computed(() => {
-  if (isAlipay.value) return 'border-[#00AEEF] bg-blue-50 dark:border-[#00AEEF]/70 dark:bg-blue-950/20'
-  if (isWxpay.value) return 'border-[#2BB741] bg-green-50 dark:border-[#2BB741]/70 dark:bg-green-950/20'
-  return 'border-gray-200 bg-white dark:border-dark-600 dark:bg-dark-800'
-})
-
-const qrLogoBgClass = computed(() => {
-  if (isAlipay.value) return 'bg-[#00AEEF]'
-  if (isWxpay.value) return 'bg-[#2BB741]'
-  return 'bg-gray-400'
-})
+const qrBorderClass = 'payment-qr-frame'
+const qrLogoBgClass = 'payment-qr-logo'
 
 const qrLogoIcon = computed(() => {
   if (isAlipay.value) return alipayIcon
@@ -508,3 +499,8 @@ onMounted(() => {
 })
 onUnmounted(() => cleanup())
 </script>
+
+<style scoped>
+.payment-qr-frame { border-color: var(--ef-rule); background: var(--ef-panel); }
+.payment-qr-logo { background: var(--ef-on-signal); }
+</style>

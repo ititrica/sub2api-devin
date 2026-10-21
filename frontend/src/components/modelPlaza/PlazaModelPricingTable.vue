@@ -1,5 +1,5 @@
 <template>
-  <div class="plaza-pricing-table overflow-x-auto" :style="accentStyle">
+  <div class="plaza-pricing-table overflow-x-auto" tabindex="0" role="region" :aria-label="t('modelPlaza.title')">
     <table class="w-full min-w-[1000px] table-auto border-collapse text-sm tabular-nums">
       <colgroup>
         <col class="w-[25%]" />
@@ -309,7 +309,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { formatScaled, resolveIntervalPrices } from '@/utils/pricing'
-import { platformAccentColor, platformBadgeLightClass, platformLabel } from '@/utils/platformColors'
+import { platformBadgeLightClass, platformLabel } from '@/utils/platformColors'
 import {
   BILLING_MODE_TOKEN,
   BILLING_MODE_IMAGE,
@@ -356,7 +356,6 @@ const props = defineProps<{
 const { t } = useI18n()
 
 /** 实付分区只从平台拿一个主色,浅底/标题/下划线全部由 scoped CSS 用 color-mix 派生。 */
-const accentStyle = computed(() => ({ '--plaza-accent': platformAccentColor(props.platform ?? '') }))
 
 const PER_MILLION = 1_000_000
 
@@ -559,40 +558,14 @@ function trimZero(n: number): string {
 </script>
 
 <style scoped>
-/* 实付分区配色统一从 --plaza-accent(平台主色)派生,新增平台无需扩展样式 */
-.plaza-pricing-table {
-  --pz-title: color-mix(in srgb, var(--plaza-accent) 88%, black);
-  --pz-bg: color-mix(in srgb, var(--plaza-accent) 7%, transparent);
-  --pz-bg-hover: color-mix(in srgb, var(--plaza-accent) 13%, transparent);
-}
-
-.dark .plaza-pricing-table {
-  --pz-title: color-mix(in srgb, var(--plaza-accent) 70%, white);
-  --pz-bg: color-mix(in srgb, var(--plaza-accent) 6%, transparent);
-  --pz-bg-hover: color-mix(in srgb, var(--plaza-accent) 10%, transparent);
-}
-
-.pz-bg,
-.pz-cell {
-  background-color: var(--pz-bg);
-}
-
-.pz-cell {
-  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-tbody tr:hover .pz-cell {
-  background-color: var(--pz-bg-hover);
-}
-
-.pz-title {
-  /* color-mix 不可用的老浏览器回退为平台原色 */
-  color: var(--plaza-accent);
-  color: var(--pz-title);
-  border-color: color-mix(in srgb, var(--pz-title) 30%, transparent);
-}
-
-.pz-unit {
-  color: color-mix(in srgb, var(--pz-title) 62%, transparent);
-}
+.plaza-pricing-table { max-width: 100%; scrollbar-color: var(--ef-ink-2) var(--ef-chip); }
+.plaza-pricing-table:focus-visible { outline: 2px solid var(--ef-ink); outline-offset: -2px; }
+.pz-bg, .pz-cell { background-color: color-mix(in srgb, var(--ef-chip) 45%, var(--ef-panel)); }
+.pz-cell { transition: background-color 150ms var(--ef-ease-mech); }
+tbody tr:hover .pz-cell { background-color: var(--ef-chip); }
+.pz-title { color: var(--ef-ink); border-color: var(--ef-rule); }
+.pz-unit { color: var(--ef-ink-2); }
+thead { background: var(--ef-panel); }
+th { font-family: var(--ef-font-ui); }
+td { font-family: var(--ef-font-ui); font-variant-numeric: tabular-nums; }
 </style>

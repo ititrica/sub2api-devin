@@ -1,133 +1,52 @@
-/** @type {import('tailwindcss').Config} */
+import colors from 'tailwindcss/colors.js'
+
+/** The site palette also covers legacy utility classes across every feature. */
+const stone = {
+  50: '#f3f1ea', 100: '#e7e3d8', 200: '#dcd8cc', 300: '#c4bfb3',
+  400: '#938d81', 500: '#716b60', 600: '#59554d', 700: '#403d36',
+  800: '#302d28', 900: '#24221e', 950: '#1b1a17'
+}
+const primary = { ...stone, 500: '#686156', 600: '#24221e', 700: '#161616' }
 export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
+    borderRadius: Object.fromEntries(['DEFAULT', 'none', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', 'full'].map(key => [key, '0'])),
+    boxShadow: Object.fromEntries(['DEFAULT', 'none', 'sm', 'md', 'lg', 'xl', '2xl', 'inner', 'glass', 'glass-sm', 'glow', 'glow-lg', 'card', 'card-hover', 'inner-glow'].map(key => [key, 'none'])),
     extend: {
       colors: {
-        // 主色调 - Teal/Cyan 青色系
-        primary: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
-          950: '#042f2e'
-        },
-        // 辅助色 - 深蓝灰
-        accent: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617'
-        },
-        // 深色模式背景
-        dark: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617'
-        }
+        // Provider identities keep their original palettes independently of UI chrome.
+        brand: Object.fromEntries(['orange', 'amber', 'green', 'emerald', 'blue', 'sky', 'purple', 'violet', 'indigo', 'pink', 'fuchsia', 'teal', 'cyan', 'rose', 'zinc', 'neutral', 'slate'].map(name => [name, colors[name]])),
+        primary, accent: stone, dark: stone, gray: stone, slate: stone, zinc: stone, neutral: stone,
+        blue: stone, cyan: stone, teal: stone, green: stone, emerald: stone,
+        violet: stone, purple: stone, indigo: stone, sky: stone,
+        yellow: stone, amber: stone, orange: stone, red: stone, rose: stone, pink: stone,
+        paper: 'var(--ef-paper)', panel: 'var(--ef-panel)', ink: 'var(--ef-ink)',
+        rule: 'var(--ef-rule)', signal: 'var(--ef-signal)'
       },
       fontFamily: {
-        sans: [
-          'system-ui',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Segoe UI',
-          'Roboto',
-          'Helvetica Neue',
-          'Arial',
-          'PingFang SC',
-          'Hiragino Sans GB',
-          'Microsoft YaHei',
-          'sans-serif'
-        ],
+        sans: ['Saira', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', 'system-ui', 'sans-serif'],
         mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
       },
-      boxShadow: {
-        glass: '0 8px 32px rgba(0, 0, 0, 0.08)',
-        'glass-sm': '0 4px 16px rgba(0, 0, 0, 0.06)',
-        glow: '0 0 20px rgba(20, 184, 166, 0.25)',
-        'glow-lg': '0 0 40px rgba(20, 184, 166, 0.35)',
-        card: '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06)',
-        'card-hover': '0 10px 40px rgba(0, 0, 0, 0.08)',
-        'inner-glow': 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-      },
       backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-primary': 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
-        'gradient-dark': 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-        'gradient-glass':
-          'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-        'mesh-gradient':
-          'radial-gradient(at 40% 20%, rgba(20, 184, 166, 0.12) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(6, 182, 212, 0.08) 0px, transparent 50%), radial-gradient(at 0% 50%, rgba(20, 184, 166, 0.08) 0px, transparent 50%)'
+        'gradient-primary': 'none', 'gradient-dark': 'none', 'gradient-glass': 'none',
+        'mesh-gradient': 'none', 'gradient-radial': 'none'
       },
       animation: {
-        'fade-in': 'fadeIn 0.3s ease-out',
-        'slide-up': 'slideUp 0.3s ease-out',
-        'slide-down': 'slideDown 0.3s ease-out',
-        'slide-in-right': 'slideInRight 0.3s ease-out',
-        'scale-in': 'scaleIn 0.2s ease-out',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        shimmer: 'shimmer 2s linear infinite',
-        glow: 'glow 2s ease-in-out infinite alternate'
+        'fade-in': 'fadeIn 320ms cubic-bezier(0.16,1,0.3,1)',
+        'slide-up': 'slideUp 320ms cubic-bezier(0.16,1,0.3,1)',
+        'slide-down': 'slideDown 320ms cubic-bezier(0.16,1,0.3,1)',
+        'slide-in-right': 'slideInRight 280ms cubic-bezier(0.16,1,0.3,1)',
+        'scale-in': 'slideDown 280ms cubic-bezier(0.16,1,0.3,1)',
+        'pulse-slow': 'none', shimmer: 'none', glow: 'none'
       },
       keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' }
-        },
-        slideUp: {
-          '0%': { opacity: '0', transform: 'translateY(10px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' }
-        },
-        slideDown: {
-          '0%': { opacity: '0', transform: 'translateY(-10px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' }
-        },
-        slideInRight: {
-          '0%': { opacity: '0', transform: 'translateX(20px)' },
-          '100%': { opacity: '1', transform: 'translateX(0)' }
-        },
-        scaleIn: {
-          '0%': { opacity: '0', transform: 'scale(0.95)' },
-          '100%': { opacity: '1', transform: 'scale(1)' }
-        },
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' }
-        },
-        glow: {
-          '0%': { boxShadow: '0 0 20px rgba(20, 184, 166, 0.25)' },
-          '100%': { boxShadow: '0 0 30px rgba(20, 184, 166, 0.4)' }
-        }
+        fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
+        slideUp: { from: { opacity: '0', transform: 'translateY(8px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        slideDown: { from: { opacity: '0', transform: 'translateY(-8px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        slideInRight: { from: { opacity: '0', transform: 'translateX(16px)' }, to: { opacity: '1', transform: 'translateX(0)' } }
       },
-      backdropBlur: {
-        xs: '2px'
-      },
-      borderRadius: {
-        '4xl': '2rem'
-      }
+      backdropBlur: { xs: '0' }
     }
   },
   plugins: []

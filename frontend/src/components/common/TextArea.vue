@@ -1,18 +1,20 @@
 <template>
   <div class="w-full">
-    <label v-if="label" :for="id" class="input-label mb-1.5 block">
+    <label v-if="label" :for="fieldId" class="input-label mb-1.5 block">
       {{ label }}
-      <span v-if="required" class="text-red-500">*</span>
+      <span v-if="required" class="text-current">*</span>
     </label>
     <div class="relative">
       <textarea
-        :id="id"
+        :id="fieldId"
         ref="textAreaRef"
         :value="modelValue"
         :disabled="disabled"
         :required="required"
         :placeholder="placeholderText"
         :readonly="readonly"
+        :aria-invalid="error ? true : undefined"
+        :aria-describedby="error || hint ? descriptionId : undefined"
         :rows="rows"
         :class="[
           'input w-full min-h-[80px] transition-all duration-200 resize-y',
@@ -26,17 +28,17 @@
       ></textarea>
     </div>
     <!-- Hint / Error Text -->
-    <p v-if="error" class="input-error-text mt-1.5">
+    <p v-if="error" :id="descriptionId" role="alert" class="input-error-text mt-1.5">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="input-hint mt-1.5">
+    <p v-else-if="hint" :id="descriptionId" class="input-hint mt-1.5">
       {{ hint }}
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 
 interface Props {
   modelValue: string | null | undefined
@@ -57,6 +59,10 @@ const props = withDefaults(defineProps<Props>(), {
   readonly: false,
   rows: 3
 })
+
+const generatedId = useId()
+const fieldId = computed(() => props.id || generatedId)
+const descriptionId = computed(() => `${fieldId.value}-description`)
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void

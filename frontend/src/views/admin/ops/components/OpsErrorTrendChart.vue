@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useChartTheme } from '@/components/charts/useChartTheme'
 import { useI18n } from 'vue-i18n'
 import {
   Chart as ChartJS,
@@ -34,15 +35,15 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 
-const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
+const chartTheme = useChartTheme()
 const colors = computed(() => ({
-  red: '#ef4444',
-  redAlpha: '#ef444420',
-  purple: '#8b5cf6',
-  purpleAlpha: '#8b5cf620',
-  gray: '#9ca3af',
-  grid: isDarkMode.value ? '#374151' : '#f3f4f6',
-  text: isDarkMode.value ? '#9ca3af' : '#6b7280'
+  red: chartTheme.value.series(0),
+  redAlpha: 'transparent',
+  purple: chartTheme.value.series(1),
+  purpleAlpha: 'transparent',
+  gray: chartTheme.value.series(3),
+  grid: chartTheme.value.grid,
+  text: chartTheme.value.text
 }))
 
 const totalRequestErrors = computed(() => sumNumbers(props.points.map((p) => p.error_count_sla ?? 0)))
@@ -70,8 +71,8 @@ const chartData = computed(() => {
         data: props.points.map((p) => p.error_count_sla ?? 0),
         borderColor: colors.value.red,
         backgroundColor: colors.value.redAlpha,
-        fill: true,
-        tension: 0.35,
+        fill: false,
+        tension: 0,
         pointRadius: 0,
         pointHitRadius: 10
       },
@@ -79,9 +80,10 @@ const chartData = computed(() => {
         label: t('admin.ops.upstreamExcl429529'),
         data: props.points.map((p) => p.upstream_error_count_excl_429_529 ?? 0),
         borderColor: colors.value.purple,
+        borderDash: [6, 3],
         backgroundColor: colors.value.purpleAlpha,
-        fill: true,
-        tension: 0.35,
+        fill: false,
+        tension: 0,
         pointRadius: 0,
         pointHitRadius: 10
       },
@@ -92,7 +94,7 @@ const chartData = computed(() => {
         backgroundColor: 'transparent',
         borderDash: [6, 6],
         fill: false,
-        tension: 0.35,
+        tension: 0,
         pointRadius: 0,
         pointHitRadius: 10
       }
@@ -110,6 +112,7 @@ const options = computed(() => {
   const c = colors.value
   return {
     responsive: true,
+    animation: chartTheme.value.animation,
     maintainAspectRatio: false,
     interaction: { intersect: false, mode: 'index' as const },
     plugins: {
@@ -119,9 +122,10 @@ const options = computed(() => {
         labels: { color: c.text, usePointStyle: true, boxWidth: 6, font: { size: 10 } }
       },
       tooltip: {
-        backgroundColor: isDarkMode.value ? '#1f2937' : '#ffffff',
-        titleColor: isDarkMode.value ? '#f3f4f6' : '#111827',
-        bodyColor: isDarkMode.value ? '#d1d5db' : '#4b5563',
+        ...chartTheme.value.tooltip,
+        backgroundColor: chartTheme.value.panel,
+        titleColor: chartTheme.value.ink,
+        bodyColor: chartTheme.value.text,
         borderColor: c.grid,
         borderWidth: 1,
         padding: 10,

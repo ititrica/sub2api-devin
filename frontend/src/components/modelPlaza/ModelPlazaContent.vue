@@ -1,39 +1,20 @@
 <template>
-  <div class="space-y-5">
-    <!-- 页头(独立形态下展示标题;后台形态 AppHeader 已有页面标题) -->
-    <div v-if="!embedded">
-      <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">{{ t('modelPlaza.title') }}</h1>
-      <p class="mt-1.5 text-sm text-gray-500 dark:text-dark-400">{{ t('modelPlaza.description') }}</p>
-    </div>
+  <div class="plaza-content">
+    <header v-if="!embedded" class="plaza-page-heading">
+      <div><p class="ef-eyebrow">// MODEL CATALOG</p><h1>{{ t('modelPlaza.title') }}</h1><p class="plaza-subtitle">{{ t('modelPlaza.description') }}</p></div>
+      <dl v-if="response" class="plaza-summary">
+        <div><dt>{{ t('modelPlaza.filters.modelLabel') }}</dt><dd>{{ modelCount }}</dd></div>
+        <div><dt>{{ t('modelPlaza.filters.groupLabel') }}</dt><dd>{{ response.groups.length }}</dd></div>
+        <div><dt>{{ t('modelPlaza.filters.platformLabel') }}</dt><dd>{{ platforms.length }}</dd></div>
+      </dl>
+    </header>
 
-    <!-- 全局价格说明(管理员配置,Markdown) -->
-    <div
-      v-if="descriptionHtml"
-      class="plaza-description rounded-2xl border border-gray-100 bg-white px-5 py-4 text-sm shadow-card dark:border-dark-700/50 dark:bg-dark-800/50"
-      v-html="descriptionHtml"
-    ></div>
+    <div v-if="descriptionHtml" class="plaza-description" v-html="descriptionHtml"></div>
+    <p v-if="!isAuthenticated" class="plaza-anonymous"><Icon name="infoCircle" size="sm" />{{ t('modelPlaza.anonymousHint') }}</p>
 
-    <!-- 未登录提示 -->
-    <p
-      v-if="!isAuthenticated"
-      class="flex items-center gap-1.5 text-xs text-gray-400 dark:text-dark-500"
-    >
-      <Icon name="infoCircle" size="xs" class="h-3.5 w-3.5" />
-      {{ t('modelPlaza.anonymousHint') }}
-    </p>
-
-    <!-- 加载/错误/空 -->
-    <div v-if="loading" class="flex min-h-[240px] items-center justify-center">
-      <div class="h-8 w-8 animate-spin rounded-full border-2 border-primary-600/25 border-t-primary-600 dark:border-primary-400/25 dark:border-t-primary-400"></div>
-    </div>
-    <div
-      v-else-if="error"
-      class="rounded-2xl border border-red-200 bg-red-50 px-5 py-8 text-center text-sm text-red-600 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300"
-    >
-      {{ t('modelPlaza.loadFailed') }}
-    </div>
+    <div v-if="loading" class="plaza-loading" role="status"><div class="plaza-load-track" aria-hidden="true"></div>{{ t('common.loading') }}</div>
+    <div v-else-if="error" class="plaza-state plaza-error" role="alert"><span aria-hidden="true">!</span>{{ t('modelPlaza.loadFailed') }}</div>
     <template v-else>
-      <!-- 筛选区:平台 → 分组 → 倍率 -->
       <PlazaFilterBar
         :platforms="platforms"
         :groups="groupOptions"
@@ -47,17 +28,8 @@
         @update:rate="selectedRate = $event"
         @update:search="searchQuery = $event"
       />
-
-      <!-- 分组分节的模型清单(默认按生效倍率升序) -->
-      <div v-if="filteredGroups.length > 0" class="space-y-5">
-        <PlazaGroupSection v-for="g in filteredGroups" :key="g.id" :group="g" />
-      </div>
-      <div
-        v-else
-        class="rounded-2xl border border-dashed border-gray-300 px-5 py-12 text-center text-sm text-gray-500 dark:border-dark-600 dark:text-dark-400"
-      >
-        {{ searchActive ? t('modelPlaza.noSearchResult') : t('modelPlaza.empty') }}
-      </div>
+      <div v-if="filteredGroups.length > 0" class="plaza-groups"><PlazaGroupSection v-for="g in filteredGroups" :key="g.id" :group="g" /></div>
+      <div v-else class="plaza-state">{{ searchActive ? t('modelPlaza.noSearchResult') : t('modelPlaza.empty') }}</div>
     </template>
   </div>
 </template>
@@ -84,6 +56,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const authStore = useAuthStore()
 const isAuthenticated = computed(() => authStore.isAuthenticated)
+const modelCount = computed(() => new Set((props.response?.groups ?? []).flatMap(group => group.models.map(model => `${model.platform}:${model.name}`))).size)
 
 const selectedPlatform = ref<string>('all')
 const selectedGroupId = ref<number | 'all'>('all')
@@ -154,42 +127,34 @@ const filteredGroups = computed(() => {
 </script>
 
 <style scoped>
-.plaza-description {
-  line-height: 1.7;
-  overflow-wrap: anywhere;
-}
-
-.plaza-description :deep(h1),
-.plaza-description :deep(h2),
-.plaza-description :deep(h3) {
-  @apply mb-2 mt-3 font-semibold text-gray-900 first:mt-0 dark:text-white;
-}
-
-.plaza-description :deep(p) {
-  @apply mb-2 text-gray-700 last:mb-0 dark:text-dark-200;
-}
-
-.plaza-description :deep(a) {
-  @apply text-primary-600 underline underline-offset-4 hover:text-primary-700 dark:text-primary-300;
-}
-
-.plaza-description :deep(ul) {
-  @apply mb-2 list-disc pl-5;
-}
-
-.plaza-description :deep(ol) {
-  @apply mb-2 list-decimal pl-5;
-}
-
-.plaza-description :deep(li) {
-  @apply mb-0.5 text-gray-700 dark:text-dark-200;
-}
-
-.plaza-description :deep(code) {
-  @apply rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs dark:bg-dark-800;
-}
-
-.plaza-description :deep(blockquote) {
-  @apply my-2 border-l-4 border-gray-300 pl-3 text-gray-600 dark:border-dark-600 dark:text-dark-300;
-}
+.plaza-content { min-width: 0; display: flex; flex-direction: column; gap: 24px; }
+.plaza-page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding-bottom: 30px; border-bottom: 1px solid var(--ef-ink); }
+.plaza-page-heading h1 { font-size: clamp(28px, 3.2vw, 44px); line-height: 1.2; font-weight: 800; margin-top: 12px; }
+.plaza-subtitle { font-size: 13px; color: var(--ef-ink-2); line-height: 1.8; margin-top: 12px; }
+.plaza-summary { display: flex; gap: 32px; flex-shrink: 0; }
+.plaza-summary > div { display: flex; flex-direction: column-reverse; min-width: 52px; }
+.plaza-summary dt { font-size: 11px; color: var(--ef-ink-2); }
+.plaza-summary dd { font: 650 38px / 1.2 var(--ef-font-ui); font-stretch: 112%; font-variant-numeric: tabular-nums; }
+.plaza-description { background: var(--ef-panel); border-left: 3px solid var(--ef-ink); padding: 18px 22px; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
+.plaza-description :deep(h1), .plaza-description :deep(h2), .plaza-description :deep(h3) { margin: 12px 0 8px; font-weight: 700; color: var(--ef-ink); }
+.plaza-description :deep(h1:first-child), .plaza-description :deep(h2:first-child), .plaza-description :deep(h3:first-child) { margin-top: 0; }
+.plaza-description :deep(p) { margin-bottom: 8px; }
+.plaza-description :deep(p:last-child) { margin-bottom: 0; }
+.plaza-description :deep(a) { text-decoration: underline; text-underline-offset: 4px; color: var(--ef-ink); }
+.plaza-description :deep(ul) { list-style: disc; padding-left: 20px; }
+.plaza-description :deep(ol) { list-style: decimal; padding-left: 20px; }
+.plaza-description :deep(code) { padding: 2px 5px; background: var(--ef-chip); font-size: 11px; }
+.plaza-description :deep(blockquote) { border-left: 2px solid var(--ef-rule); padding-left: 12px; margin-block: 10px; color: var(--ef-ink-2); }
+.plaza-anonymous { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ef-ink-2); }
+.plaza-anonymous svg { flex-shrink: 0; }
+.plaza-groups { display: flex; flex-direction: column; gap: 32px; min-width: 0; }
+.plaza-loading { display: grid; place-content: center; gap: 18px; min-height: 250px; font-size: 12px; text-align: center; color: var(--ef-ink-2); }
+.plaza-load-track { width: 160px; height: 10px; background: repeating-linear-gradient(90deg, var(--ef-chip) 0 12px, transparent 12px 16px); position: relative; overflow: hidden; }
+.plaza-load-track::before { content: ''; position: absolute; width: 44px; height: 10px; background: var(--ef-signal); animation: plaza-loading 1s linear infinite; }
+.plaza-state { padding: 48px 24px; text-align: center; border-block: 1px solid var(--ef-rule); font-size: 13px; color: var(--ef-ink-2); }
+.plaza-error { display: flex; justify-content: center; align-items: center; gap: 12px; }
+.plaza-error > span { display: grid; place-items: center; width: 28px; height: 28px; background: var(--ef-signal); color: var(--ef-on-signal); font-weight: 750; }
+@keyframes plaza-loading { from { transform: translateX(-44px); } to { transform: translateX(160px); } }
+@media (prefers-reduced-motion: reduce) { .plaza-load-track::before { animation: none; left: 58px; } }
+@media (max-width: 700px) { .plaza-page-heading { flex-direction: column; align-items: flex-start; gap: 24px; } .plaza-summary { gap: 36px; } .plaza-summary dd { font-size: 30px; } }
 </style>

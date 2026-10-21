@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { RouterView, useRouter, useRoute } from 'vue-router'
 import { computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { captureOperation } from '@/utils/operationFeedback'
+import { installRouteMotion } from '@/utils/routeMotion'
 import Toast from '@/components/common/Toast.vue'
 import NavigationProgress from '@/components/common/NavigationProgress.vue'
 import AdminComplianceDialog from '@/components/admin/AdminComplianceDialog.vue'
@@ -14,6 +16,7 @@ import { resolveSiteBillingMode } from '@/utils/siteBillingMode'
 
 const router = useRouter()
 const route = useRoute()
+onBeforeUnmount(installRouteMotion(router))
 const appStore = useAppStore()
 const authStore = useAuthStore()
 const subscriptionStore = useSubscriptionStore()
@@ -136,10 +139,12 @@ router.afterEach(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('visibilitychange', onVisibilityChange)
+  document.removeEventListener('click', captureOperation, true)
   window.removeEventListener('admin-compliance-required', onAdminComplianceRequired)
 })
 
 onMounted(async () => {
+  document.addEventListener('click', captureOperation, true)
   window.addEventListener('admin-compliance-required', onAdminComplianceRequired)
 
   // Check if setup is needed
@@ -163,7 +168,7 @@ onMounted(async () => {
 
 <template>
   <NavigationProgress />
-  <RouterView />
+  <div class="site-route"><RouterView /></div>
   <Toast />
   <AnnouncementPopup />
   <AdminComplianceDialog />

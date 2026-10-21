@@ -1,6 +1,6 @@
 <template>
   <AppLayout>
-    <div class="mx-auto max-w-6xl space-y-6">
+    <div class="settings-page">
       <!-- Loading State -->
       <div v-if="loading" class="flex items-center justify-center py-12">
         <div
@@ -9,22 +9,25 @@
       </div>
 
       <!-- Settings Form -->
-      <form v-else @submit.prevent="saveSettings" class="space-y-6" novalidate>
+      <form v-else @submit.prevent="saveSettings" class="settings-form" novalidate>
         <!-- Tab Navigation -->
         <div class="settings-tabs-shell">
+          <p class="settings-index-title">// SETTINGS</p>
           <nav
             class="settings-tabs-scroll"
             role="tablist"
+            aria-orientation="vertical"
             :aria-label="t('admin.settings.title')"
           >
             <div class="settings-tabs">
               <button
-                v-for="tab in settingsTabs"
+                v-for="(tab, tabIndex) in settingsTabs"
                 :key="tab.key"
                 :id="`settings-tab-${tab.key}`"
                 type="button"
                 role="tab"
                 :aria-selected="activeTab === tab.key"
+                :aria-controls="`settings-panel-${tab.key}`"
                 :tabindex="activeTab === tab.key ? 0 : -1"
                 :class="[
                   'settings-tab',
@@ -33,6 +36,7 @@
                 @click="selectSettingsTab(tab.key)"
                 @keydown="handleSettingsTabKeydown($event, tab.key)"
               >
+                <span class="settings-tab-number">{{ String(tabIndex + 1).padStart(2, '0') }}</span>
                 <span class="settings-tab-icon">
                   <Icon :name="tab.icon" size="sm" />
                 </span>
@@ -44,6 +48,7 @@
           </nav>
         </div>
 
+        <div ref="settingsPanels" :id="`settings-panel-${activeTab}`" class="settings-panels space-y-6" role="tabpanel" :aria-labelledby="`settings-tab-${activeTab}`" tabindex="0">
         <!-- Tab: Security — Admin API Key -->
         <div v-show="activeTab === 'security'" class="space-y-6">
           <!-- Admin API Key Settings -->
@@ -8901,11 +8906,14 @@
           <BackupSettings />
         </div>
 
+        </div>
+
         <!-- Save Button -->
-        <div v-show="activeTab !== 'backup'" class="flex justify-end">
+        <div v-show="activeTab !== 'backup'" class="settings-save-bar">
           <button
             type="submit"
             :disabled="saving || loadFailed"
+            :aria-busy="saving"
             class="btn btn-primary"
           >
             <svg
@@ -8975,7 +8983,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from "vue";
+import { switchPanel } from "@/utils/motion"
+import { ref, reactive, computed, onMounted, watch, nextTick } from "vue";
 import { listPlatformIds } from "@/constants/platformCatalog";
 import { useI18n } from "vue-i18n";
 import { adminAPI } from "@/api";
@@ -9101,6 +9110,8 @@ type SettingsTab =
   | "email"
   | "backup";
 const activeTab = ref<SettingsTab>("general");
+const settingsPanels = ref<HTMLElement | null>(null);
+let requestedSettingsTab: SettingsTab | null = null;
 const settingsTabs = [
   { key: "general" as SettingsTab, icon: "home" as const },
   { key: "agreement" as SettingsTab, icon: "document" as const },
@@ -9123,7 +9134,11 @@ const settingsTabKeyboardActions = {
 } as const;
 
 function selectSettingsTab(tab: SettingsTab): void {
-  activeTab.value = tab;
+  if (tab === activeTab.value && requestedSettingsTab === null) return;
+  requestedSettingsTab = tab;
+  void switchPanel(settingsPanels.value, async () => { activeTab.value = tab; await nextTick(); }).finally(() => {
+    if (requestedSettingsTab === tab) requestedSettingsTab = null;
+  });
 }
 
 function focusSettingsTab(tab: SettingsTab): void {
@@ -13302,129 +13317,33 @@ watch(
 </script>
 
 <style scoped>
-.default-sub-group-select :deep(.select-trigger) {
-  @apply h-[42px];
+.default-sub-group-select :deep(.select-trigger), .default-sub-delete-btn { min-height: 44px; }
+.settings-page { min-width: 0; max-width: 1440px; margin-inline: auto; }
+.settings-form { display: grid; grid-template-columns: 192px minmax(0, 1fr); column-gap: 28px; row-gap: 24px; align-items: start; }
+.settings-form > div:not(.settings-tabs-shell) { grid-column: 2; min-width: 0; }
+.settings-tabs-shell { position: sticky; top: 88px; grid-column: 1; grid-row: 1 / span 2; align-self: start; border-top: 2px solid var(--ef-ink); padding-top: 14px; }
+.settings-index-title { margin: 0 0 13px 10px; color: var(--ef-ink-2); font: 600 9px var(--ef-font-ui); font-stretch: 125%; letter-spacing: .15em; }
+.settings-tabs { display: flex; flex-direction: column; gap: 4px; }
+.settings-tab { display: flex; align-items: center; gap: 10px; min-height: 49px; width: 100%; padding: 10px calc(8px + var(--ef-cut)) 10px 10px; text-align: left; font-size: 12px; font-weight: 500; color: var(--ef-ink-2); background: transparent; clip-path: var(--ef-clip); transition: background-color 180ms var(--ef-mech), color 180ms var(--ef-mech); }
+.settings-tab:hover { background: var(--ef-chip); color: var(--ef-ink); }
+.settings-tab:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; }
+.settings-tab-active, .settings-tab-active:hover { background: var(--ef-signal); color: var(--ef-on-signal); font-weight: 700; }
+.settings-tab-number { font: 500 10px var(--ef-font-ui); font-variant-numeric: tabular-nums; opacity: .65; }
+.settings-tab-icon { display: flex; flex: 0 0 16px; align-items: center; justify-content: center; }
+.settings-tab-label { min-width: 0; line-height: 1.5; }
+.settings-save-bar { position: sticky; bottom: 0; z-index: 15; display: flex; justify-content: flex-end; border-top: 1px solid var(--ef-rule); padding: 16px 0; background: var(--ef-paper); }
+.settings-form :deep(.card) { border-top: 2px solid var(--ef-ink); }
+.settings-form :deep(h2) { font-size: 18px; letter-spacing: -.02em; }
+@media (max-width: 1279px) { .settings-form { grid-template-columns: 160px minmax(0, 1fr); column-gap: 20px; } .settings-tab-icon { display: none; } }
+@media (max-width: 767px) {
+  .settings-form { display: flex; flex-direction: column; gap: 20px; }
+  .settings-form > div { width: 100%; }
+  .settings-tabs-shell { position: static; padding-top: 12px; }
+  .settings-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+  .settings-tab { min-height: 48px; padding: 8px 15px 8px 8px; gap: 6px; font-size: 11px; }
+  .settings-tab-number { font-size: 9px; }
+  .settings-save-bar { bottom: 0; padding-bottom: calc(16px + env(safe-area-inset-bottom)); }
+  .settings-form :deep(.card > .p-6), .settings-form :deep(.card > .px-6) { padding-inline: 16px; }
 }
-
-.default-sub-delete-btn {
-  @apply h-[42px];
-}
-
-/* ============ 系统设置 Tab 导航 ============ */
-.settings-tabs-shell {
-  @apply sticky z-20 -mx-1 rounded-2xl border border-white/80 bg-white/90 p-1.5 backdrop-blur-xl;
-  top: 4.75rem;
-  box-shadow:
-    0 12px 28px rgb(15 23 42 / 0.07),
-    0 1px 0 rgb(255 255 255 / 0.9) inset;
-}
-
-.settings-tabs-scroll {
-  @apply overflow-x-auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.settings-tabs-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.settings-tabs {
-  @apply flex min-w-max items-center gap-1;
-}
-
-.settings-tab {
-  @apply relative isolate flex h-10 min-w-[6.75rem] shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-transparent px-3 text-sm font-medium text-gray-600 outline-none transition-colors duration-200 ease-out dark:text-gray-300;
-}
-
-@media (min-width: 768px) {
-  .settings-tabs {
-    @apply min-w-full;
-  }
-
-  .settings-tab {
-    @apply min-w-0 flex-1 basis-0 overflow-hidden px-2 text-[13px];
-  }
-
-  .settings-tab-icon {
-    @apply h-6 w-6;
-  }
-}
-
-.settings-tab::before {
-  @apply absolute inset-0 -z-10 rounded-xl opacity-0 transition-opacity duration-200;
-  content: "";
-  background: linear-gradient(135deg, rgb(248 250 252 / 0.95), rgb(241 245 249 / 0.8));
-}
-
-.settings-tab:hover::before,
-.settings-tab:focus-visible::before {
-  opacity: 1;
-}
-
-.settings-tab:focus-visible {
-  @apply ring-2 ring-primary-500/40 ring-offset-2 ring-offset-white dark:ring-offset-dark-900;
-}
-
-.settings-tab-active {
-  @apply border-primary-200/80 bg-white text-primary-700 shadow-sm dark:border-primary-400/30 dark:bg-dark-700/95 dark:text-primary-200;
-  box-shadow:
-    0 8px 18px rgb(15 23 42 / 0.08),
-    0 1px 0 rgb(255 255 255 / 0.92) inset;
-}
-
-.settings-tab-active::before {
-  opacity: 0;
-}
-
-.settings-tab-active::after {
-  position: absolute;
-  right: 0.75rem;
-  bottom: 0.25rem;
-  left: 0.75rem;
-  height: 2px;
-  border-radius: 9999px;
-  content: "";
-  background: linear-gradient(90deg, #14b8a6, #0ea5e9);
-}
-
-.settings-tab-icon {
-  @apply flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 transition-colors duration-200 dark:text-gray-400;
-}
-
-.settings-tab:hover .settings-tab-icon,
-.settings-tab:focus-visible .settings-tab-icon {
-  @apply text-gray-700 dark:text-gray-200;
-}
-
-.settings-tab-active .settings-tab-icon {
-  @apply bg-primary-50 text-primary-600 dark:bg-primary-400/10 dark:text-primary-300;
-}
-
-.settings-tab-label {
-  @apply min-w-0 overflow-hidden text-ellipsis whitespace-nowrap leading-none;
-}
-</style>
-
-<style>
-/* Dark-mode overrides for the settings tabs shell. Kept in an UNSCOPED block
-   because Vue's scoped-CSS compiler was dropping the `:global(.dark) ...`
-   rules in the production build, leaving inactive tabs unreadable on dark. */
-.dark .settings-tabs-shell {
-  border-color: rgb(51 65 85 / 0.65);
-  background: rgb(15 23 42 / 0.86);
-  box-shadow:
-    0 16px 36px rgb(0 0 0 / 0.28),
-    0 1px 0 rgb(255 255 255 / 0.06) inset;
-}
-
-.dark .settings-tab::before {
-  background: linear-gradient(135deg, rgb(30 41 59 / 0.9), rgb(51 65 85 / 0.62));
-}
-
-.dark .settings-tab-active {
-  box-shadow:
-    0 12px 26px rgb(0 0 0 / 0.22),
-    0 1px 0 rgb(255 255 255 / 0.08) inset;
-}
+@media (prefers-reduced-motion: reduce) { .settings-tab { transition: none; } }
 </style>

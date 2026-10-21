@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useChartTheme } from '@/components/charts/useChartTheme'
 import { useI18n } from 'vue-i18n'
 import { Chart as ChartJS, ArcElement, Legend, Tooltip } from 'chart.js'
 import { Doughnut } from 'vue-chartjs'
@@ -21,13 +22,13 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 
-const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
+const chartTheme = useChartTheme()
 const colors = computed(() => ({
-  blue: '#3b82f6',
-  red: '#ef4444',
-  orange: '#f59e0b',
-  gray: '#9ca3af',
-  text: isDarkMode.value ? '#9ca3af' : '#6b7280'
+  blue: chartTheme.value.series(0),
+  red: chartTheme.value.series(0),
+  orange: chartTheme.value.series(2),
+  gray: chartTheme.value.series(3),
+  text: chartTheme.value.text
 }))
 
 const totalSlaErrors = computed(() =>
@@ -88,7 +89,9 @@ const chartData = computed(() => {
       {
         data: categories.value.map((c) => c.count),
         backgroundColor: categories.value.map((c) => c.color),
-        borderWidth: 0
+        borderWidth: 2,
+        borderColor: chartTheme.value.panel,
+        hoverBackgroundColor: chartTheme.value.signal
       }
     ]
   }
@@ -96,13 +99,15 @@ const chartData = computed(() => {
 
 const options = computed(() => ({
   responsive: true,
+    animation: chartTheme.value.animation,
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false },
     tooltip: {
-      backgroundColor: isDarkMode.value ? '#1f2937' : '#ffffff',
-      titleColor: isDarkMode.value ? '#f3f4f6' : '#111827',
-      bodyColor: isDarkMode.value ? '#d1d5db' : '#4b5563'
+        ...chartTheme.value.tooltip,
+      backgroundColor: chartTheme.value.panel,
+      titleColor: chartTheme.value.ink,
+      bodyColor: chartTheme.value.text
     }
   }
 }))

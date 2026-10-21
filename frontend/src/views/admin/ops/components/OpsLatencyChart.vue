@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useChartTheme } from '@/components/charts/useChartTheme'
 import { useI18n } from 'vue-i18n'
 import { Chart as ChartJS, BarElement, CategoryScale, Legend, LinearScale, Tooltip } from 'chart.js'
 import { Bar } from 'vue-chartjs'
@@ -18,11 +19,11 @@ interface Props {
 const props = defineProps<Props>()
 const { t } = useI18n()
 
-const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
+const chartTheme = useChartTheme()
 const colors = computed(() => ({
-  blue: '#3b82f6',
-  grid: isDarkMode.value ? '#374151' : '#f3f4f6',
-  text: isDarkMode.value ? '#9ca3af' : '#6b7280'
+  blue: chartTheme.value.series(0),
+  grid: chartTheme.value.grid,
+  text: chartTheme.value.text
 }))
 
 const hasData = computed(() => (props.latencyData?.total_requests ?? 0) > 0)
@@ -43,7 +44,8 @@ const chartData = computed(() => {
         label: t('admin.ops.requests'),
         data: props.latencyData.buckets.map((b) => b.count),
         backgroundColor: c.blue,
-        borderRadius: 4,
+        hoverBackgroundColor: chartTheme.value.signal,
+        borderRadius: 0,
         barPercentage: 0.6
       }
     ]
@@ -54,6 +56,7 @@ const options = computed(() => {
   const c = colors.value
   return {
     responsive: true,
+    animation: chartTheme.value.animation,
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false }

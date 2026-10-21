@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 
 import GroupDistributionChart from '../GroupDistributionChart.vue'
+import DistributionBars from '../DistributionBars.vue'
 
 const messages: Record<string, string> = {
   'admin.dashboard.groupDistribution': 'Group Distribution',
@@ -27,12 +28,6 @@ vi.mock('vue-i18n', async () => {
   }
 })
 
-vi.mock('vue-chartjs', () => ({
-  Doughnut: {
-    props: ['data'],
-    template: '<div class="chart-data">{{ JSON.stringify(data) }}</div>',
-  },
-}))
 
 describe('GroupDistributionChart', () => {
   const groupStats = [
@@ -66,7 +61,8 @@ describe('GroupDistributionChart', () => {
       },
     })
 
-    const chartData = JSON.parse(wrapper.find('.chart-data').text())
+    const bars = wrapper.findComponent(DistributionBars)
+    const chartData = { labels: bars.props('labels'), datasets: [{ data: bars.props('values'), backgroundColor: bars.props('colors') }] }
     expect(chartData.labels).toEqual(['group-a', 'group-b'])
     expect(chartData.datasets[0].data).toEqual([1200, 600])
 
@@ -74,13 +70,7 @@ describe('GroupDistributionChart', () => {
     expect(rows[0].text()).toContain('group-a')
     expect(rows[1].text()).toContain('group-b')
 
-    const options = (wrapper.vm as any).$?.setupState.doughnutOptions
-    const label = options.plugins.tooltip.callbacks.label({
-      label: 'group-a',
-      raw: 1200,
-      dataset: { data: [1200, 600] },
-    })
-    expect(label).toBe('group-a: 1.20K (66.7%)')
+    expect(wrapper.find('.distribution-percent').text()).toBe('66.7%')
   })
 
   it('uses actual_cost and reorders rows in actual cost mode', () => {
@@ -96,7 +86,8 @@ describe('GroupDistributionChart', () => {
       },
     })
 
-    const chartData = JSON.parse(wrapper.find('.chart-data').text())
+    const bars = wrapper.findComponent(DistributionBars)
+    const chartData = { labels: bars.props('labels'), datasets: [{ data: bars.props('values'), backgroundColor: bars.props('colors') }] }
     expect(chartData.labels).toEqual(['group-b', 'group-a'])
     expect(chartData.datasets[0].data).toEqual([0.9, 0.1])
 
@@ -104,13 +95,7 @@ describe('GroupDistributionChart', () => {
     expect(rows[0].text()).toContain('group-b')
     expect(rows[1].text()).toContain('group-a')
 
-    const options = (wrapper.vm as any).$?.setupState.doughnutOptions
-    const label = options.plugins.tooltip.callbacks.label({
-      label: 'group-b',
-      raw: 0.9,
-      dataset: { data: [0.9, 0.1] },
-    })
-    expect(label).toBe('group-b: $0.900 (90.0%)')
+    expect(wrapper.find('.distribution-percent').text()).toBe('90%')
   })
 
   it('can hide account cost for user usage stats without account_cost', () => {

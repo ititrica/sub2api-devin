@@ -38,9 +38,9 @@
     <template v-else>
       <!-- Amount -->
       <div class="card overflow-hidden">
-        <div class="bg-gradient-to-br from-[#635bff] to-[#4f46e5] px-6 py-5 text-center">
-          <p class="text-sm font-medium text-indigo-200">{{ t('payment.actualPay') }}</p>
-          <p class="mt-1 text-3xl font-bold text-white">{{ paymentAmountSymbol }}{{ payAmount.toFixed(2) }}</p>
+        <div class="payment-amount-heading">
+          <p class="payment-amount-label">{{ t('payment.actualPay') }}</p>
+          <p class="payment-amount-value">{{ paymentAmountSymbol }}{{ payAmount.toFixed(2) }}</p>
         </div>
       </div>
       <!-- Stripe Payment Element -->
@@ -209,3 +209,11 @@ async function handleCancel() {
   }
 }
 </script>
+
+<style scoped>
+.payment-amount-heading { padding: 24px; text-align: left; background: var(--ef-panel); border-top: 3px solid var(--ef-ink); border-bottom: 1px solid var(--ef-rule); }
+.payment-amount-label { color: var(--ef-ink-2); font-size: 12px; font-weight: 600; }
+.payment-amount-value { margin-top: 8px; font: 700 38px / 1.25 var(--ef-font-ui); font-variant-numeric: tabular-nums; color: var(--ef-ink); }
+.payment-qr-frame { border-color: var(--ef-rule); background: var(--ef-panel); }
+.payment-qr-logo { background: var(--ef-on-signal); color: var(--ef-panel); }
+</style>

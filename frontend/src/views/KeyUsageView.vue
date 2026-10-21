@@ -1,13 +1,13 @@
 <template>
-  <div class="relative flex min-h-screen flex-col bg-gray-50 dark:bg-dark-950">
+  <div class="key-usage-page">
     <!-- Header (same pattern as HomeView) -->
-    <header class="relative z-20 px-6 py-4">
-      <nav class="mx-auto flex max-w-6xl items-center justify-between">
+    <header class="key-usage-header">
+      <nav class="key-usage-nav">
         <router-link to="/home" class="flex items-center gap-3">
-          <div class="h-10 w-10 overflow-hidden rounded-xl shadow-md">
-            <img :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
+          <div class="key-usage-logo site-brand-frame">
+            <img class="site-brand-image" :src="siteLogo || '/logo.png'" :alt="siteName" />
           </div>
-          <span class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white">{{ siteName }}</span>
+          <span class="key-usage-brand">{{ siteName }}</span>
         </router-link>
         <div class="flex items-center gap-3">
           <LocaleSwitcher />
@@ -34,19 +34,20 @@
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 w-full max-w-5xl mx-auto px-6 py-12">
+    <main class="key-usage-main">
       <!-- Hero -->
-      <div class="text-center mb-12">
+      <div class="key-usage-heading">
+        <p class="ef-eyebrow">// API KEY USAGE</p>
         <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-3 text-gray-900 dark:text-white">
           {{ t('keyUsage.title') }}
         </h1>
-        <p class="text-gray-500 dark:text-dark-400 text-base max-w-md mx-auto">
+        <p class="key-usage-description">
           {{ t('keyUsage.subtitle') }}
         </p>
       </div>
 
       <!-- Input Section -->
-      <div class="max-w-xl mx-auto mb-14">
+      <div class="key-usage-query">
         <div class="flex gap-3">
           <div class="flex-1 relative">
             <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-dark-500">
@@ -56,6 +57,7 @@
             </div>
             <input
               v-model="apiKey"
+              :aria-label="t('keyUsage.placeholder')"
               :type="keyVisible ? 'text' : 'password'"
               :placeholder="t('keyUsage.placeholder')"
               class="input-ring w-full h-12 pl-12 pr-12 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder:text-gray-400 transition-all dark:border-dark-700 dark:bg-dark-900 dark:text-white dark:placeholder:text-dark-500"
@@ -63,6 +65,8 @@
             />
             <button
               @click="keyVisible = !keyVisible"
+              :aria-label="keyVisible ? 'Hide API key' : 'Show API key'"
+              :aria-pressed="keyVisible"
               class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:text-dark-500 dark:hover:text-white transition-colors"
             >
               <svg v-if="!keyVisible" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -77,7 +81,7 @@
           <button
             @click="queryKey"
             :disabled="isQuerying"
-            class="h-12 px-7 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-medium text-sm transition-all active:scale-[0.97] flex items-center gap-2 whitespace-nowrap disabled:opacity-60"
+            class="btn btn-primary key-usage-submit"
           >
             <svg v-if="isQuerying" class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"/>
@@ -195,25 +199,19 @@
               <div class="flex justify-center">
                 <div class="relative">
                   <svg class="w-44 h-44" viewBox="0 0 160 160">
-                    <circle cx="80" cy="80" r="68" fill="none" :stroke="ringTrackColor" stroke-width="10"/>
+                    <circle cx="80" cy="80" r="68" fill="none" stroke="var(--ef-chip)" stroke-width="10"/>
                     <circle
                       class="progress-ring"
                       cx="80" cy="80" r="68" fill="none"
-                      :stroke="`url(#ring-grad-${i})`"
-                      stroke-width="10" stroke-linecap="round"
+                      stroke="var(--ef-ink)"
+                      stroke-width="10" stroke-linecap="butt"
                       :stroke-dasharray="CIRCUMFERENCE.toFixed(2)"
                       :stroke-dashoffset="getRingOffset(ring)"
                     />
-                    <defs>
-                      <linearGradient :id="`ring-grad-${i}`" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" :stop-color="RING_GRADIENTS[i % 4].from"/>
-                        <stop offset="100%" :stop-color="RING_GRADIENTS[i % 4].to"/>
-                      </linearGradient>
-                    </defs>
                   </svg>
                   <div class="absolute inset-0 flex flex-col items-center justify-center">
                     <template v-if="ring.isBalance">
-                      <span class="text-2xl font-bold tabular-nums" :style="{ color: RING_GRADIENTS[i % 4].from }">
+                      <span class="text-2xl font-bold tabular-nums" style="color: var(--ef-ink)">
                         {{ ring.amount }}
                       </span>
                     </template>
@@ -224,7 +222,7 @@
                       <span class="text-xs text-gray-500 dark:text-dark-400 mt-0.5">{{ t('keyUsage.used') }}</span>
                       <span
                         class="text-sm font-semibold mt-1 tabular-nums"
-                        :style="{ color: RING_GRADIENTS[i % 4].from }"
+                        style="color: var(--ef-ink)"
                       >{{ ring.amount }}</span>
                       <p v-if="ring.resetAt && formatResetTime(ring.resetAt)" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 tabular-nums">
                         ⟳ {{ formatResetTime(ring.resetAt) }}
@@ -417,6 +415,7 @@
 </template>
 
 <script setup lang="ts">
+import { useTheme, initTheme } from "@/composables/useTheme"
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores'
@@ -440,13 +439,9 @@ const githubUrl = 'https://github.com/Wei-Shaw/sub2api'
 
 // ==================== Theme (same as HomeView) ====================
 
-const isDark = ref(document.documentElement.classList.contains('dark'))
+const { isDark, toggleTheme } = useTheme()
 
-function toggleTheme() {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark', isDark.value)
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-}
+
 
 const currentYear = computed(() => new Date().getFullYear())
 
@@ -528,17 +523,10 @@ function setDailyUsageDays(days: 7 | 30 | 90) {
 // ==================== Ring Animation ====================
 
 const CIRCUMFERENCE = 2 * Math.PI * 68
-const RING_GRADIENTS = [
-  { from: '#14b8a6', to: '#5eead4' },
-  { from: '#6366F1', to: '#A5B4FC' },
-  { from: '#10B981', to: '#6EE7B7' },
-  { from: '#F59E0B', to: '#FCD34D' },
-]
 
 const ringAnimated = ref(false)
 const displayPcts = ref<number[]>([])
 
-const ringTrackColor = computed(() => isDark.value ? '#222222' : '#F0F0EE')
 
 interface RingItem {
   title: string
@@ -556,6 +544,11 @@ function getRingOffset(ring: RingItem): number {
 }
 
 function triggerRingAnimation(items: RingItem[]) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    ringAnimated.value = true
+    displayPcts.value = items.map(item => item.isBalance ? 0 : Math.round(item.pct))
+    return
+  }
   ringAnimated.value = false
   displayPcts.value = items.map(() => 0)
 
@@ -565,7 +558,7 @@ function triggerRingAnimation(items: RingItem[]) {
         ringAnimated.value = true
 
         // Animate percentage numbers
-        const duration = 1000
+        const duration = 400
         const startTime = performance.now()
         const targets = items.map(item => item.isBalance ? 0 : item.pct)
 
@@ -910,13 +903,7 @@ async function queryKey() {
 
 // ==================== Lifecycle ====================
 
-function initTheme() {
-  const savedTheme = localStorage.getItem('theme')
-  if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    isDark.value = true
-    document.documentElement.classList.add('dark')
-  }
-}
+
 
 function formatResetTime(resetAt: string | null | undefined): string {
   if (!resetAt) return ''
@@ -944,64 +931,31 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Input focus ring */
-.input-ring {
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
-}
-.input-ring:focus {
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
-  border-color: #14b8a6;
-  outline: none;
-}
-
-/* Ring animation */
-.progress-ring {
-  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  transform: rotate(-90deg);
-  transform-origin: 50% 50%;
-}
-
-/* Skeleton loading */
-@keyframes shimmer-kv {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-.skeleton {
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
-  background-size: 200% 100%;
-  animation: shimmer-kv 1.8s ease-in-out infinite;
-  border-radius: 8px;
-}
-:global(.dark) .skeleton {
-  background: linear-gradient(90deg, #334155 25%, #1e293b 50%, #334155 75%);
-  background-size: 200% 100%;
-}
-
-/* Fade up animation */
-@keyframes fade-up-kv {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.fade-up {
-  animation: fade-up-kv 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-.fade-up-delay-1 { animation-delay: 0.1s; opacity: 0; }
-.fade-up-delay-2 { animation-delay: 0.2s; opacity: 0; }
-.fade-up-delay-3 { animation-delay: 0.3s; opacity: 0; }
-.fade-up-delay-4 { animation-delay: 0.4s; opacity: 0; }
-
-/* Pulse dot */
-@keyframes pulse-dot-kv {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
-  50% { opacity: 0.6; box-shadow: 0 0 8px 2px currentColor; }
-}
-.pulse-dot {
-  animation: pulse-dot-kv 2s ease-in-out infinite;
-}
-
-/* Tabular nums */
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-}
+.key-usage-page { display: flex; min-height: 100dvh; flex-direction: column; background: var(--ef-paper); color: var(--ef-ink); }
+.key-usage-header { position: relative; z-index: 20; border-bottom: 1px solid var(--ef-rule); padding: 18px 32px; }
+.key-usage-nav { display: flex; max-width: 1280px; margin-inline: auto; align-items: center; justify-content: space-between; gap: 16px; }
+.key-usage-brand { font: 700 23px var(--ef-font-ui); font-stretch: 125%; letter-spacing: -.04em; }
+.key-usage-logo { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: var(--ef-chip); }
+.key-usage-logo img { width: 100%; height: 100%; object-fit: cover; }
+.key-usage-main { flex: 1; width: 100%; max-width: 1120px; margin-inline: auto; padding: 56px 32px; }
+.key-usage-heading { border-bottom: 1px solid var(--ef-rule); margin-bottom: 28px; padding-bottom: 28px; }
+.key-usage-heading .ef-eyebrow { margin-bottom: 14px; color: var(--ef-ink-2); }
+.key-usage-heading h1 { font-size: clamp(32px, 4vw, 48px); font-weight: 750; line-height: 1.15; }
+.key-usage-description { color: var(--ef-ink-2); margin-top: 12px; font-size: 14px; }
+.key-usage-query { max-width: 720px; margin: 0 0 40px; }
+.key-usage-query > p { text-align: left; }
+.key-usage-submit { height: 48px; white-space: nowrap; }
+.input-ring { transition: border-color 180ms var(--ef-mech); }
+.input-ring:focus { outline: 1px solid var(--ef-ink); outline-offset: -1px; border-color: var(--ef-ink); }
+.progress-ring { transition: stroke-dashoffset 400ms var(--ef-mech); transform: rotate(-90deg); transform-origin: 50% 50%; }
+.skeleton { background: repeating-linear-gradient(-45deg, var(--ef-chip), var(--ef-chip) 5px, var(--ef-paper) 5px, var(--ef-paper) 7px); }
+@keyframes fade-up-kv { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.fade-up { animation: fade-up-kv 280ms var(--ef-snap) both; }
+.fade-up-delay-1 { animation-delay: 38ms; }
+.fade-up-delay-2 { animation-delay: 76ms; }
+.fade-up-delay-3 { animation-delay: 114ms; }
+.fade-up-delay-4 { animation-delay: 152ms; }
+.tabular-nums { font-family: var(--ef-font-ui); font-stretch: 112%; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+@media (max-width: 639px) { .key-usage-header { padding: 14px 16px; } .key-usage-brand { font-size: 20px; } .key-usage-main { padding: 32px 16px; } .key-usage-query > .flex { flex-direction: column; } .key-usage-submit { justify-content: center; } .key-usage-query input { font-size: 16px; } }
+@media (prefers-reduced-motion: reduce) { .progress-ring { transition: none; } .fade-up { animation: none; opacity: 1; } }
 </style>

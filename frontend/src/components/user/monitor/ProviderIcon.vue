@@ -5,6 +5,7 @@
     :height="size"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
+    :class="platformIconClass(provider)"
     fill="currentColor"
     fill-rule="evenodd"
     aria-hidden="true"
@@ -26,6 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { platformIconClass } from '@/utils/platformColors'
 import type { Provider } from '@/api/admin/channelMonitor'
 
 interface IconData {

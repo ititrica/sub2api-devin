@@ -1,8 +1,8 @@
 <template>
   <div class="w-full">
-    <label v-if="label" :for="id" class="input-label mb-1.5 block">
+    <label v-if="label" :for="fieldId" class="input-label mb-1.5 block">
       {{ label }}
-      <span v-if="required" class="text-red-500">*</span>
+      <span v-if="required" class="text-current">*</span>
     </label>
     <div class="relative">
       <!-- Prefix Icon Slot -->
@@ -14,7 +14,7 @@
       </div>
 
       <input
-        :id="id"
+        :id="fieldId"
         ref="inputRef"
         :type="type"
         :value="modelValue"
@@ -23,6 +23,8 @@
         :placeholder="placeholderText"
         :autocomplete="autocomplete"
         :readonly="readonly"
+        :aria-invalid="error ? true : undefined"
+        :aria-describedby="error || hint ? descriptionId : undefined"
         :class="[
           'input w-full transition-all duration-200',
           $slots.prefix ? 'pl-11' : '',
@@ -46,17 +48,17 @@
       </div>
     </div>
     <!-- Hint / Error Text -->
-    <p v-if="error" class="input-error-text mt-1.5">
+    <p v-if="error" :id="descriptionId" role="alert" class="input-error-text mt-1.5">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="input-hint mt-1.5">
+    <p v-else-if="hint" :id="descriptionId" class="input-hint mt-1.5">
       {{ hint }}
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useId } from 'vue'
 
 interface Props {
   modelValue: string | number | null | undefined
@@ -78,6 +80,10 @@ const props = withDefaults(defineProps<Props>(), {
   required: false,
   readonly: false
 })
+
+const generatedId = useId()
+const fieldId = computed(() => props.id || generatedId)
+const descriptionId = computed(() => `${fieldId.value}-description`)
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void

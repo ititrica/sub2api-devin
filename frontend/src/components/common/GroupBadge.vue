@@ -151,36 +151,36 @@ const labelClass = computed(() => {
 
   // 正常状态或无天数：根据平台显示主题色
   if (props.platform === 'anthropic') {
-    return `${base} bg-orange-200/60 text-orange-800 dark:bg-orange-800/40 dark:text-orange-300`
+    return `${base} bg-brand-orange-200/60 text-brand-orange-800 dark:bg-brand-orange-800/40 dark:text-brand-orange-300`
   }
   if (props.platform === 'openai') {
-    return `${base} bg-emerald-200/60 text-emerald-800 dark:bg-emerald-800/40 dark:text-emerald-300`
+    return `${base} bg-brand-emerald-200/60 text-brand-emerald-800 dark:bg-brand-emerald-800/40 dark:text-brand-emerald-300`
   }
   if (props.platform === 'gemini') {
-    return `${base} bg-blue-200/60 text-blue-800 dark:bg-blue-800/40 dark:text-blue-300`
+    return `${base} bg-brand-blue-200/60 text-brand-blue-800 dark:bg-brand-blue-800/40 dark:text-brand-blue-300`
   }
   if (props.platform === 'antigravity') {
-    return `${base} bg-purple-200/60 text-purple-800 dark:bg-purple-800/40 dark:text-purple-300`
+    return `${base} bg-brand-purple-200/60 text-brand-purple-800 dark:bg-brand-purple-800/40 dark:text-brand-purple-300`
   }
   if (props.platform === 'grok') {
-    return `${base} bg-zinc-300/70 text-zinc-800 dark:bg-zinc-700/60 dark:text-zinc-200`
+    return `${base} bg-brand-zinc-300/70 text-brand-zinc-800 dark:bg-brand-zinc-700/60 dark:text-brand-zinc-200`
   }
   if (props.platform === 'kimi') {
-    return `${base} bg-pink-200/60 text-pink-800 dark:bg-pink-800/40 dark:text-pink-300`
+    return `${base} bg-brand-pink-200/60 text-brand-pink-800 dark:bg-brand-pink-800/40 dark:text-brand-pink-300`
   }
   if (props.platform === 'zhipu') {
-    return `${base} bg-indigo-200/60 text-indigo-800 dark:bg-indigo-800/40 dark:text-indigo-300`
+    return `${base} bg-brand-indigo-200/60 text-brand-indigo-800 dark:bg-brand-indigo-800/40 dark:text-brand-indigo-300`
   }
   if (props.platform === 'deepseek') {
-    return `${base} bg-teal-200/60 text-teal-800 dark:bg-teal-800/40 dark:text-teal-300`
+    return `${base} bg-brand-teal-200/60 text-brand-teal-800 dark:bg-brand-teal-800/40 dark:text-brand-teal-300`
   }
   if (props.platform === 'minimax') {
-    return `${base} bg-rose-200/60 text-rose-800 dark:bg-rose-800/40 dark:text-rose-300`
+    return `${base} bg-brand-rose-200/60 text-brand-rose-800 dark:bg-brand-rose-800/40 dark:text-brand-rose-300`
   }
   if (props.platform === 'composite') {
-    return `${base} bg-cyan-200/70 text-cyan-900 dark:bg-cyan-900/50 dark:text-cyan-300`
+    return `${base} bg-brand-cyan-200/70 text-brand-cyan-900 dark:bg-brand-cyan-900/50 dark:text-brand-cyan-300`
   }
-  return `${base} bg-violet-200/60 text-violet-800 dark:bg-violet-800/40 dark:text-violet-300`
+  return `${base} bg-brand-violet-200/60 text-brand-violet-800 dark:bg-brand-violet-800/40 dark:text-brand-violet-300`
 })
 
 const peakRateClass = computed(() => {
@@ -192,57 +192,57 @@ const badgeClass = computed(() => {
   if (props.platform === 'anthropic') {
     // Claude: orange theme
     return isSubscription.value
-      ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
-      : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'
+      ? 'bg-brand-orange-100 text-brand-orange-700 dark:bg-brand-orange-900/30 dark:text-brand-orange-400'
+      : 'bg-brand-amber-50 text-brand-amber-700 dark:bg-brand-amber-900/20 dark:text-brand-amber-400'
   } else if (props.platform === 'openai') {
     // OpenAI: green theme
     return isSubscription.value
-      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-      : 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400'
+      ? 'bg-brand-emerald-100 text-brand-emerald-700 dark:bg-brand-emerald-900/30 dark:text-brand-emerald-400'
+      : 'bg-brand-green-50 text-brand-green-700 dark:bg-brand-green-900/20 dark:text-brand-green-400'
   }
   if (props.platform === 'gemini') {
     return isSubscription.value
-      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-      : 'bg-sky-50 text-sky-700 dark:bg-sky-900/20 dark:text-sky-400'
+      ? 'bg-brand-blue-100 text-brand-blue-700 dark:bg-brand-blue-900/30 dark:text-brand-blue-400'
+      : 'bg-brand-sky-50 text-brand-sky-700 dark:bg-brand-sky-900/20 dark:text-brand-sky-400'
   }
   if (props.platform === 'antigravity') {
     return isSubscription.value
-      ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
-      : 'bg-fuchsia-50 text-fuchsia-700 dark:bg-fuchsia-900/20 dark:text-fuchsia-400'
+      ? 'bg-brand-purple-100 text-brand-purple-700 dark:bg-brand-purple-900/30 dark:text-brand-purple-400'
+      : 'bg-brand-fuchsia-50 text-brand-fuchsia-700 dark:bg-brand-fuchsia-900/20 dark:text-brand-fuchsia-400'
   }
   if (props.platform === 'grok') {
     return isSubscription.value
-      ? 'bg-zinc-200 text-zinc-800 dark:bg-zinc-700 dark:text-zinc-100'
-      : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200'
+      ? 'bg-brand-zinc-200 text-brand-zinc-800 dark:bg-brand-zinc-700 dark:text-brand-zinc-100'
+      : 'bg-brand-zinc-100 text-brand-zinc-700 dark:bg-brand-zinc-800 dark:text-brand-zinc-200'
   }
   if (props.platform === 'kimi') {
     return isSubscription.value
-      ? 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'
-      : 'bg-pink-50 text-pink-700 dark:bg-pink-900/20 dark:text-pink-400'
+      ? 'bg-brand-pink-100 text-brand-pink-700 dark:bg-brand-pink-900/30 dark:text-brand-pink-400'
+      : 'bg-brand-pink-50 text-brand-pink-700 dark:bg-brand-pink-900/20 dark:text-brand-pink-400'
   }
   if (props.platform === 'zhipu') {
     return isSubscription.value
-      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
-      : 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400'
+      ? 'bg-brand-indigo-100 text-brand-indigo-700 dark:bg-brand-indigo-900/30 dark:text-brand-indigo-400'
+      : 'bg-brand-indigo-50 text-brand-indigo-700 dark:bg-brand-indigo-900/20 dark:text-brand-indigo-400'
   }
   if (props.platform === 'deepseek') {
     return isSubscription.value
-      ? 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
-      : 'bg-teal-50 text-teal-700 dark:bg-teal-900/20 dark:text-teal-400'
+      ? 'bg-brand-teal-100 text-brand-teal-700 dark:bg-brand-teal-900/30 dark:text-brand-teal-400'
+      : 'bg-brand-teal-50 text-brand-teal-700 dark:bg-brand-teal-900/20 dark:text-brand-teal-400'
   }
   if (props.platform === 'minimax') {
     return isSubscription.value
-      ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'
-      : 'bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-400'
+      ? 'bg-brand-rose-100 text-brand-rose-700 dark:bg-brand-rose-900/30 dark:text-brand-rose-400'
+      : 'bg-brand-rose-50 text-brand-rose-700 dark:bg-brand-rose-900/20 dark:text-brand-rose-400'
   }
   if (props.platform === 'composite') {
     return isSubscription.value
-      ? 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300'
-      : 'bg-cyan-50 text-cyan-800 dark:bg-cyan-900/20 dark:text-cyan-300'
+      ? 'bg-brand-cyan-100 text-brand-cyan-800 dark:bg-brand-cyan-900/30 dark:text-brand-cyan-300'
+      : 'bg-brand-cyan-50 text-brand-cyan-800 dark:bg-brand-cyan-900/20 dark:text-brand-cyan-300'
   }
   // Fallback: original colors
   return isSubscription.value
-    ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
-    : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+    ? 'bg-brand-violet-100 text-brand-violet-700 dark:bg-brand-violet-900/30 dark:text-brand-violet-400'
+    : 'bg-brand-emerald-100 text-brand-emerald-700 dark:bg-brand-emerald-900/30 dark:text-brand-emerald-400'
 })
 </script>

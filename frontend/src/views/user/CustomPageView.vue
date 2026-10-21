@@ -475,7 +475,7 @@ onUnmounted(() => {
     width: 70%;
     max-width: 240px;
     height: 100%;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid var(--ef-ink);
   }
 }
 
@@ -519,7 +519,7 @@ onUnmounted(() => {
 .custom-embed-shell {
   @apply relative;
   @apply h-full w-full overflow-hidden rounded-2xl;
-  @apply bg-gradient-to-b from-gray-50 to-white dark:from-dark-900 dark:to-dark-950;
+  background: var(--ef-panel);
   @apply p-0;
 }
 
@@ -570,15 +570,17 @@ onUnmounted(() => {
   right: 8px;
   padding: 4px 10px;
   font-size: 12px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #e2e8f0;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  background: var(--ef-chip);
+  color: var(--ef-ink);
+  border: 1px solid var(--ef-rule);
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.2s, background 0.2s;
   font-family: inherit;
 }
-.copy-btn:hover { background: rgba(255, 255, 255, 0.25); }
-pre:hover .copy-btn { opacity: 1; }
+.copy-btn:hover { background: var(--ef-signal); color: var(--ef-on-signal); }
+pre:hover .copy-btn, pre:focus-within .copy-btn { opacity: 1; }
+.copy-btn:focus-visible { opacity: 1; outline: 2px solid currentColor; }
+@media (hover: none) { .copy-btn { opacity: 1; min-height: 44px; } }
 </style>

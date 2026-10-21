@@ -44,65 +44,20 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* 桌面端：Flexbox 布局 */
-.table-page-layout {
-  @apply flex flex-col gap-6;
-  height: calc(100vh - 64px - 4rem); /* 减去 header + lg:p-8 的上下padding */
-}
-
-.layout-section-fixed {
-  @apply flex-shrink-0;
-}
-
-.layout-section-scrollable {
-  @apply flex-1 min-h-0 flex flex-col;
-}
-
-/* 表格滚动容器 - 增强版表体滚动方案 */
-.table-scroll-container {
-  @apply flex flex-col overflow-hidden h-full bg-white dark:bg-dark-800 rounded-2xl border border-gray-200 dark:border-dark-700 shadow-sm;
-}
-
-.table-scroll-container :deep(.table-wrapper) {
-  @apply flex-1 overflow-x-auto overflow-y-auto;
-  /* 确保横向滚动条显示在最底部 */
-  scrollbar-gutter: stable;
-}
-
-.table-scroll-container :deep(table) {
-  @apply w-full;
-  min-width: max-content; /* 关键：确保表格宽度根据内容撑开，从而触发横向滚动 */
-  display: table; /* 使用标准 table 布局以支持 sticky 列 */
-}
-
-.table-scroll-container :deep(thead) {
-  @apply bg-gray-50/80 dark:bg-dark-800/80 backdrop-blur-sm;
-}
-
-.table-scroll-container :deep(tbody) {
-  /* 保持默认 table-row-group 显示，不使用 block */
-}
-
-.table-scroll-container :deep(th) {
-  @apply px-5 py-4 text-left text-sm font-medium text-gray-600 dark:text-dark-300 border-b border-gray-200 dark:border-dark-700;
-}
-
-.table-scroll-container :deep(td) {
-  @apply px-5 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-100 dark:border-dark-800;
-}
-
-/* 移动端：恢复正常滚动 */
-.table-page-layout.mobile-mode .table-scroll-container {
-  @apply h-auto overflow-visible border-none shadow-none bg-transparent;
-}
-
-.table-page-layout.mobile-mode .layout-section-scrollable {
-  @apply flex-none min-h-fit;
-}
-
-.table-page-layout.mobile-mode .table-scroll-container :deep(table) {
-  @apply flex-none;
-  display: table;
-  min-width: 100%;
-}
+.table-page-layout { display: flex; flex-direction: column; gap: 18px; min-width: 0; min-height: 380px; height: calc(100dvh - 252px); }
+.layout-section-fixed { flex-shrink: 0; min-width: 0; }
+.layout-section-fixed:has(+ .layout-section-scrollable) { padding-bottom: 18px; border-bottom: 1px solid var(--ef-rule); }
+.layout-section-scrollable { display: flex; flex: 1; flex-direction: column; min-height: 0; min-width: 0; }
+.table-scroll-container { display: flex; flex-direction: column; height: 100%; min-width: 0; overflow: hidden; background: var(--ef-panel); border: 0; border-top: 2px solid var(--ef-ink); border-bottom: 1px solid var(--ef-rule); box-shadow: none; border-radius: 0; }
+.table-scroll-container :deep(.table-wrapper) { @apply overflow-x-auto; flex: 1; overflow-y: auto; scrollbar-gutter: stable; }
+.table-scroll-container :deep(table) { width: 100%; min-width: max-content; display: table; }
+.table-scroll-container :deep(thead) { background: var(--ef-paper); }
+.table-scroll-container :deep(th) { padding: 15px 18px; color: var(--ef-ink-2); border-bottom: 1px solid var(--ef-rule); font-size: 11px; font-weight: 650; text-align: left; }
+.table-scroll-container :deep(td) { padding: 16px 18px; color: var(--ef-ink); border-bottom: 1px solid var(--ef-rule); font-size: 12px; }
+.table-page-layout.mobile-mode { height: auto; min-height: 0; }
+.table-page-layout.mobile-mode .table-scroll-container { height: auto; min-width: 0; }
+.table-page-layout.mobile-mode .layout-section-scrollable { flex: none; min-height: 0; }
+.table-page-layout.mobile-mode .table-scroll-container :deep(.table-wrapper) { width: 100%; max-width: 100%; }
+.table-page-layout.mobile-mode .table-scroll-container :deep(table) { display: table; min-width: 100%; }
+@media (max-width: 639px) { .table-page-layout { gap: 14px; } .layout-section-fixed :deep(.justify-end) { flex-wrap: wrap; } }
 </style>

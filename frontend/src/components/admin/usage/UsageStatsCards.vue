@@ -1,20 +1,20 @@
 <template>
-  <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-    <div class="card p-4 flex items-center gap-3">
+  <div class="usage-summary">
+    <div class="usage-summary-metric">
       <div class="rounded-lg bg-blue-100 p-2 dark:bg-blue-900/30 text-blue-600">
         <Icon name="document" size="md" />
       </div>
       <div>
         <p class="text-xs font-medium text-gray-500">{{ t('usage.totalRequests') }}</p>
-        <p class="text-xl font-bold">{{ stats?.total_requests?.toLocaleString() || '0' }}</p>
+        <p class="text-xl font-bold"><SettledText :value="stats?.total_requests?.toLocaleString() || '0'" /></p>
         <p class="text-xs text-gray-400">{{ t('usage.inSelectedRange') }}</p>
       </div>
     </div>
-    <div class="card p-4 flex items-center gap-3">
+    <div class="usage-summary-metric">
       <div class="rounded-lg bg-amber-100 p-2 dark:bg-amber-900/30 text-amber-600"><svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg></div>
       <div>
         <p class="text-xs font-medium text-gray-500">{{ t('usage.totalTokens') }}</p>
-        <p class="text-xl font-bold">{{ formatTokens(stats?.total_tokens || 0) }}</p>
+        <p class="text-xl font-bold"><SettledText :value="formatTokens(stats?.total_tokens || 0)" /></p>
         <p class="flex flex-wrap items-center gap-x-1 text-xs text-gray-500">
           <span>{{ t('usage.in') }}: {{ formatTokens(stats?.total_input_tokens || 0) }}</span>
           <span>/</span>
@@ -58,7 +58,7 @@
         </p>
       </div>
     </div>
-    <div class="card p-4 flex items-center gap-3">
+    <div class="usage-summary-metric">
       <div class="rounded-lg bg-green-100 p-2 dark:bg-green-900/30 text-green-600">
         <Icon name="dollar" size="md" />
       </div>
@@ -70,7 +70,7 @@
         <p class="text-xs text-gray-400">
           <template v-if="showAccountCost && totalAccountCost != null">
             <span class="text-orange-500">{{ t('usage.accountCost') }} ${{ totalAccountCost.toFixed(4) }}</span>
-            <span> · </span>
+            <span> / </span>
           </template>
           <span>
             {{ t('usage.standardCost') }}
@@ -79,16 +79,17 @@
         </p>
       </div>
     </div>
-    <div class="card p-4 flex items-center gap-3">
+    <div class="usage-summary-metric">
       <div class="rounded-lg bg-purple-100 p-2 dark:bg-purple-900/30 text-purple-600">
         <Icon name="clock" size="md" />
       </div>
-      <div><p class="text-xs font-medium text-gray-500">{{ t('usage.avgDuration') }}</p><p class="text-xl font-bold">{{ formatDuration(stats?.average_duration_ms || 0) }}</p></div>
+      <div><p class="text-xs font-medium text-gray-500">{{ t('usage.avgDuration') }}</p><p class="text-xl font-bold"><SettledText :value="formatDuration(stats?.average_duration_ms || 0)" /></p></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import SettledText from "@/components/common/SettledText.vue"
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { AdminUsageStatsResponse } from '@/api/admin/usage'
@@ -126,3 +127,15 @@ const formatTokens = (value: number) => {
 const cacheLabel = () => t('usage.cacheTotal')
 const cacheDetailLabel = () => t('usage.cacheBreakdown')
 </script>
+
+<style scoped>
+.usage-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); background:var(--ef-panel); border-top:2px solid var(--ef-ink); border-left:1px solid var(--ef-rule); }
+.usage-summary-metric { position:relative; min-width:0; padding:22px 24px; border-right:1px solid var(--ef-rule); border-bottom:1px solid var(--ef-rule); }
+.usage-summary-metric > div:first-child { position:absolute; top:18px; right:16px; padding:0; background:none; color:var(--ef-ink-2); opacity:.65; }
+.usage-summary-metric > div:last-child { min-width:0; }
+.usage-summary-metric :deep(.text-xl) { margin:16px 0 8px; font:600 clamp(27px,2.7vw,38px)/1.15 var(--ef-font-ui); color:var(--ef-ink); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.usage-summary-metric > div:last-child > p:first-child { padding-right:18px; color:var(--ef-ink-2); font-weight:500; font-size:12px; }
+.usage-summary-metric > div:last-child > p:last-child:not(.text-xl) { font-size:10px; line-height:1.8; }
+@media(max-width:1279px) { .usage-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:600px) { .usage-summary-metric { padding:18px 16px; } .usage-summary-metric > div:first-child { display:none; } .usage-summary-metric :deep(.text-xl) { font-size:27px; } }
+</style>

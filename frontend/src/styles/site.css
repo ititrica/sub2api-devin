@@ -1,0 +1,120 @@
+/* Site: amber / warm / wide / hatch / standard / full.
+   The preset is selected once on <html>; this file adapts the shared kit to Vue. */
+@font-face {
+  font-family: Saira;
+  src: url('/fonts/Saira.ttf') format('truetype');
+  font-weight: 100 900;
+  font-stretch: 50% 125%;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  --ef-font-ui: 'Saira', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --ef-font-text: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --ef-clip: polygon(0 0, 100% 0, 100% calc(100% - var(--ef-cut)), calc(100% - var(--ef-cut)) 100%, 0 100%);
+  --ef-ease-mech: var(--ef-mech);
+  --ef-ease-snap: var(--ef-snap);
+  --ef-command: #161616;
+  --ef-command-text: #ededed;
+  --site-brand-clip: polygon(0 0, 100% 0, 100% 72%, 72% 100%, 0 100%);
+}
+/* Existing theme controls toggle .dark. Keep one theme state for all features. */
+html.dark[data-ef-paper='warm'] {
+  --ef-paper: #1b1a17;
+  --ef-panel: #24221e;
+  --ef-rule: #38352f;
+  --ef-chip: #302d28;
+  --ef-ink: #ededed;
+  --ef-ink-2: #aaa69d;
+  --ef-trace: var(--ef-signal);
+  --ef-tag-bg: #3a3730;
+  --ef-tag-fg: var(--ef-ink);
+  --ef-danger: #b3261e;
+  --ef-mark: color-mix(in srgb, var(--ef-signal) 22%, transparent);
+}
+.ef-eyebrow { font-family: var(--ef-font-ui); font-stretch: 125%; font-size: 10px; font-weight: 600; letter-spacing: .14em; line-height: 1.5; text-transform: uppercase; color: var(--ef-ink-2); }
+.ef-field { font-family: var(--ef-font-ui); font-stretch: 112%; font-variant-numeric: tabular-nums; }
+.ef-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-bottom: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--ef-rule); }
+.ef-section-heading h2 { font-size: 20px; font-weight: 700; }
+.ef-cut { clip-path: var(--ef-clip); }
+.ef-hatch { background-image: var(--ef-hatch); }
+/* Utility compatibility: complex existing feature forms use Tailwind directly.
+   Map geometry globally without changing their state, events, or render slots. */
+html[data-ef-variant='site'] :where(*, *::before, *::after) { border-radius: 0 !important; box-shadow: none !important; }
+html[data-ef-variant='site'] :where([class*='bg-gradient-'], [class*='bg-mesh-gradient']) { background-image: none !important; background-color: var(--ef-chip); color: var(--ef-ink); }
+html[data-ef-variant='site'] :where(.fixed.inset-0[class*='bg-gradient-']) { background: rgb(22 22 22 / .65); }
+html[data-ef-variant='site'] :where(button[class*='bg-gradient-'], a[class*='bg-gradient-']) { background: var(--ef-ink); color: var(--ef-panel); clip-path: var(--ef-clip); }
+html[data-ef-variant='site'] :where(button[class*='bg-gradient-']:hover, a[class*='bg-gradient-']:hover) { background: var(--ef-signal); color: var(--ef-on-signal); }
+html[data-ef-variant='site'] :where([class*='backdrop-blur']) { backdrop-filter: none !important; }
+html[data-ef-variant='site'] :where([class*='bg-clip-text']) { background-image: none !important; color: var(--ef-ink) !important; -webkit-text-fill-color: currentColor; }
+html[data-ef-variant='site'] :where([class~='bg-white']) { background-color: var(--ef-panel); }
+html[data-ef-variant='site'] :where([class*='hover:scale-']:hover, [class*='active:scale-']:active) { transform: none; }
+html[data-ef-variant='site'] :where([class*='animate-pulse'], [class*='animate-float'], [class*='animate-glow']) { animation: none !important; }
+html[data-ef-variant='site'] :where([class*='animate-pulse']) { background-image: var(--ef-hatch); }
+/* Buttons keep their content clear of the larger site cut. Native inputs remain rectangular. */
+html[data-ef-variant='site'] :where(button:not([role='switch']):not([class*='sidebar']):not(.select-trigger)) { font-weight: 600; }
+html[data-ef-variant='site'] :where(button:focus-visible, a:focus-visible, [role='option']:focus-visible) { outline: 2px solid currentColor !important; outline-offset: -4px; }
+html[data-ef-variant='site'] :where(input:focus-visible, textarea:focus-visible, select:focus-visible) { outline: 2px solid var(--ef-ink) !important; outline-offset: -2px; }
+html[data-ef-variant='site'] :where(input:not([type='checkbox']):not([type='radio']), select, textarea) { font-variant-numeric: tabular-nums; }
+html[data-ef-variant='site'] :where(.select-trigger, .select-dropdown-portal, .date-picker-trigger, .date-picker-dropdown) { background: var(--ef-panel); border-color: var(--ef-rule); color: var(--ef-ink); }
+html[data-ef-variant='site'] .select-trigger { min-height: 44px; padding-right: calc(12px + var(--ef-cut)); clip-path: var(--ef-clip); background: var(--ef-chip); }
+html[data-ef-variant='site'] .select-dropdown-portal { border: 1px solid var(--ef-ink); }
+html[data-ef-variant='site'] .select-option { min-height: 40px; }
+html[data-ef-variant='site'] .select-option-selected { background: var(--ef-signal); color: var(--ef-on-signal); font-weight: 700; }
+html[data-ef-variant='site'] .select-option-selected :where(svg, span) { color: inherit; }
+html[data-ef-variant='site'] .select-option-focused:not(.select-option-selected) { background: var(--ef-chip); color: var(--ef-ink); }
+html[data-ef-variant='site'] .select-search-input { background: transparent; }
+html[data-ef-variant='site'] .select-trigger-open { border-color: var(--ef-ink); }
+html[data-ef-variant='site'] .select-trigger-error { border-left: 4px solid var(--ef-signal); }
+html[data-ef-variant='site'] :where(.table-wrapper th) { font-stretch: 112%; font-weight: 600; font-size: 11px; background: var(--ef-paper); border-bottom: 1px solid var(--ef-rule); }
+html[data-ef-variant='site'] :where(.table-wrapper td) { font-variant-numeric: tabular-nums; }
+html[data-ef-variant='site'] :where(.table-wrapper tr:hover td) { background-color: var(--ef-paper); }
+html[data-ef-variant='site'] :where(.table-wrapper .sticky-column-shadow::after, .table-wrapper .sticky-last-column::before) { background: var(--ef-rule); width: 1px; }
+/* Segmented selections use ink; active navigation uses the accent. */
+html[data-ef-variant='site'] :where(button[role='tab'][aria-selected='true']) { background: var(--ef-ink); color: var(--ef-panel); }
+html[data-ef-variant='site'] :where(button[role='tab'][aria-selected='true'] *) { color: inherit; }
+html[data-ef-variant='site'] :where(.driver-popover) { background: var(--ef-panel); color: var(--ef-ink); border: 1px solid var(--ef-ink); font-family: var(--ef-font-ui); }
+html[data-ef-variant='site'] :where(.driver-popover-next-btn, .driver-popover-prev-btn) { background: var(--ef-chip); color: var(--ef-ink); border: 0; text-shadow: none; }
+@media (hover: none), (pointer: coarse) {
+  html[data-ef-variant='site'] .btn-primary { background: var(--ef-signal); color: var(--ef-on-signal); }
+  html[data-ef-variant='site'] :where(button, [role='button'], .btn, .select-option) { min-height: 44px; }
+  html[data-ef-variant='site'] :where(input:not([type='checkbox']):not([type='radio']), textarea, select) { font-size: 16px; }
+}
+@media (max-width: 639px) {
+  html[data-ef-variant='site'] :where(.card-body, .modal-body, .dialog-body) { padding: 18px 16px; }
+  html[data-ef-variant='site'] :where(.card-header, .card-footer, .modal-header, .modal-footer, .dialog-header, .dialog-footer) { padding: 16px; }
+  html[data-ef-variant='site'] :where(.modal-overlay, .dialog-overlay) { padding: 10px; }
+  html[data-ef-variant='site'] .modal-content { max-height: calc(100dvh - 20px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-ef-variant='site'], html[data-ef-variant='site'] *, html[data-ef-variant='site'] *::before, html[data-ef-variant='site'] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Brand artwork is intentionally full bleed; keep the supplied aspect ratio. */
+.site-brand-image { display: block; flex-shrink: 0; aspect-ratio: 1; object-fit: cover; object-position: center; clip-path: var(--site-brand-clip); background: var(--ef-panel); }
+.site-brand-frame { overflow: hidden; padding: 0; clip-path: var(--site-brand-clip); }
+.site-brand-frame .site-brand-image { clip-path: none; }
+.sidebar-logo { overflow: hidden; padding: 0; }
+
+
+/* Solid actions fill their cut shape without a border interrupting the wipe. */
+html[data-ef-variant='site'] :is(.btn-primary, .btn-success, .btn-stripe, .btn-airwallex, .btn-alipay, .btn-wxpay, .hero-primary, .chart-toggle-active, .tab-active, button[role='tab'][aria-selected='true'], .trend-modes button, .analysis-tabs button, :is(button,a):is(.bg-black,.bg-gray-900,.bg-primary-500,.bg-primary-600,.bg-primary-700,[class*='bg-gradient-'])) {
+  position: relative;
+  border: 0;
+}
+html[data-ef-variant='site'] :is(.trend-modes, .analysis-tabs, .chart-panel-heading div:has(> .chart-toggle)) { border: 0; }
+html[data-ef-variant='site'] :is(.btn-primary, .btn-success, .btn-stripe, .btn-airwallex, .btn-alipay, .btn-wxpay, .hero-primary, .chart-toggle-active, .tab-active, button[role='tab'][aria-selected='true'], .trend-modes button, .analysis-tabs button, :is(button,a):is(.bg-black,.bg-gray-900,.bg-primary-500,.bg-primary-600,.bg-primary-700,[class*='bg-gradient-'])):focus {
+  outline: none !important;
+}
+/* Keyboard focus remains visible as a short internal line, never an outline. */
+html[data-ef-variant='site'] :is(.btn-primary, .btn-success, .btn-stripe, .btn-airwallex, .btn-alipay, .btn-wxpay, .hero-primary, .chart-toggle-active, .tab-active, button[role='tab'][aria-selected='true'], .trend-modes button, .analysis-tabs button, :is(button,a):is(.bg-black,.bg-gray-900,.bg-primary-500,.bg-primary-600,.bg-primary-700,[class*='bg-gradient-'])):focus-visible::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: calc(14px + var(--ef-cut));
+  bottom: 5px;
+  height: 2px;
+  background: currentColor;
+  pointer-events: none;
+}
+html[data-ef-variant='site'] :is(.trend-modes button, .analysis-tabs button, .chart-toggle-active):focus-visible::after { left: 12px; right: 12px; bottom: 4px; }

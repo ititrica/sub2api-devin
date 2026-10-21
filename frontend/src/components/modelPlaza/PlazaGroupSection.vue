@@ -1,10 +1,8 @@
 <template>
-  <section
-    class="overflow-hidden rounded-2xl border bg-white shadow-card dark:bg-dark-800/50"
-    :class="[platformBorderStrongClass(group.platform)]"
-  >
+  <section class="plaza-group">
     <!-- 分组头部:名称/平台/倍率徽章/专属/订阅徽章 + 描述 -->
-    <header class="border-b border-gray-100 px-5 py-4 dark:border-dark-700/60">
+    <header class="plaza-group-header">
+      <div class="plaza-group-meta"><span>// {{ group.platform.toUpperCase() }}</span><span>{{ t('modelPlaza.filters.modelLabel') }} / {{ group.models.length }}</span></div>
       <div class="flex flex-wrap items-center gap-2">
         <GroupBadge
           :name="group.name"
@@ -81,7 +79,6 @@ import GroupBadge from '@/components/common/GroupBadge.vue'
 import PlazaModelPricingTable from './PlazaModelPricingTable.vue'
 import type { ModelPlazaGroup } from '@/api/modelPlaza'
 import type { GroupPlatform, SubscriptionType } from '@/types'
-import { platformBorderStrongClass } from '@/utils/platformColors'
 import { hasPeakRate, formatPeakRateWindow, serverTimezoneLabel } from '@/utils/peak-rate'
 import { useAppStore } from '@/stores/app'
 
@@ -121,3 +118,11 @@ const longContextNote = computed(() => {
   return hasOfficialLadder ? t('modelPlaza.detail.longContextDisabledNote') : ''
 })
 </script>
+
+<style scoped>
+.plaza-group { min-width: 0; background: var(--ef-panel); border-top: 3px solid var(--ef-ink); }
+.plaza-group-header { border-bottom: 1px solid var(--ef-rule); padding: 20px 22px; }
+.plaza-group-meta { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 14px; font: 550 10px var(--ef-font-ui); letter-spacing: .12em; color: var(--ef-ink-2); }
+.plaza-group-header :deep(.group-badge) { font-size: 14px; }
+@media (max-width: 600px) { .plaza-group-header { padding: 18px 16px; } }
+</style>

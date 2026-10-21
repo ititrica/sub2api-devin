@@ -1,21 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-dark-950">
-    <!-- Background Decoration -->
-    <div class="pointer-events-none fixed inset-0 bg-mesh-gradient"></div>
-
-    <!-- Sidebar -->
+  <div class="app-layout" :class="{ 'app-layout-collapsed': sidebarCollapsed }">
     <AppSidebar />
-
-    <!-- Main Content Area -->
-    <div
-      class="relative min-h-screen transition-all duration-300"
-      :class="[sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-64']"
-    >
-      <!-- Header -->
+    <div class="app-workspace">
       <AppHeader />
-
-      <!-- Main Content -->
-      <main class="p-4 md:p-6 lg:p-8">
+      <main id="main-content" class="app-content">
+        <LayoutPageHeading />
         <slot />
       </main>
     </div>
@@ -31,6 +20,7 @@ import { useOnboardingTour } from '@/composables/useOnboardingTour'
 import { useOnboardingStore } from '@/stores/onboarding'
 import AppSidebar from './AppSidebar.vue'
 import AppHeader from './AppHeader.vue'
+import LayoutPageHeading from './LayoutPageHeading.vue'
 
 const appStore = useAppStore()
 const authStore = useAuthStore()
@@ -50,3 +40,14 @@ onMounted(() => {
 
 defineExpose({ replayTour })
 </script>
+
+<style scoped>
+.app-layout { min-height: 100dvh; background: var(--ef-paper); color: var(--ef-ink); }
+.app-workspace { min-width: 0; margin-left: 248px; min-height: 100dvh; transition: margin-left 280ms var(--ef-ease-mech); }
+.app-layout-collapsed .app-workspace { margin-left: 76px; }
+.app-content { width: 100%; min-width: 0; padding: 30px 32px 32px; max-width: 1920px; margin-inline: auto; }
+@media (max-width: 1279px) { .app-content { padding: 24px; } }
+@media (max-width: 1023px) { .app-workspace, .app-layout-collapsed .app-workspace { margin-left: 0; } }
+@media (max-width: 639px) { .app-content { padding: 24px 16px; } }
+@media (prefers-reduced-motion: reduce) { .app-workspace { transition: none; } }
+</style>

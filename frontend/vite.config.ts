@@ -2,6 +2,7 @@ import { defineConfig, loadEnv, Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import checker from 'vite-plugin-checker'
 import { resolve } from 'path'
+import { mockPreview } from './dev/mockPreview'
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => ({
@@ -77,11 +78,12 @@ function injectPublicSettings(backendUrl: string): Plugin {
   }
 }
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(({ mode, command }) => {
   // 加载环境变量
   const env = loadEnv(mode, process.cwd(), '')
   const backendUrl = env.VITE_DEV_PROXY_TARGET || 'http://localhost:8080'
-  const devPort = Number(env.VITE_DEV_PORT || 3000)
+  const mock = command === 'serve' && mode === 'mock'
+  const devPort = Number(env.VITE_DEV_PORT || (mock ? 5179 : 3000))
 
   return {
     plugins: [
@@ -89,7 +91,7 @@ export default defineConfig(({ mode }) => {
       checker({
         vueTsc: true
       }),
-      injectPublicSettings(backendUrl)
+      mock ? mockPreview() : injectPublicSettings(backendUrl)
     ],
   resolve: {
     alias: {
@@ -101,7 +103,8 @@ export default defineConfig(({ mode }) => {
   define: {
     // 启用 vue-i18n JIT 编译，在 CSP 环境下处理消息插值
     // JIT 编译器生成 AST 对象而非 JS 代码，无需 unsafe-eval
-    __INTLIFY_JIT_COMPILATION__: true
+    __INTLIFY_JIT_COMPILATION__: true,
+    ...(mock ? { 'import.meta.env.VITE_API_BASE_URL': JSON.stringify('/api/v1') } : {})
   },
   build: {
     outDir: '../backend/internal/web/dist',
@@ -155,9 +158,10 @@ export default defineConfig(({ mode }) => {
     }
   },
     server: {
-      host: '0.0.0.0',
+      host: mock ? '127.0.0.1' : '0.0.0.0',
+      strictPort: mock,
       port: devPort,
-      proxy: {
+      proxy: mock ? undefined : {
         '/api': {
           target: backendUrl,
           changeOrigin: true

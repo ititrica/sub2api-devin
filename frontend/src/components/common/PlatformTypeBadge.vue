@@ -177,58 +177,58 @@ const planIconName = computed<'bolt' | null>(() => {
 
 const platformClass = computed(() => {
   if (props.platform === 'anthropic') {
-    return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+    return 'bg-brand-orange-100 text-brand-orange-700 dark:bg-brand-orange-900/30 dark:text-brand-orange-400'
   }
   if (props.platform === 'openai') {
-    return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+    return 'bg-brand-emerald-100 text-brand-emerald-700 dark:bg-brand-emerald-900/30 dark:text-brand-emerald-400'
   }
   if (props.platform === 'antigravity') {
-    return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+    return 'bg-brand-purple-100 text-brand-purple-700 dark:bg-brand-purple-900/30 dark:text-brand-purple-400'
   }
   if (props.platform === 'grok') {
-    return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+    return 'bg-brand-zinc-100 text-brand-zinc-700 dark:bg-brand-zinc-800 dark:text-brand-zinc-300'
   }
   if (props.platform === 'kimi') {
-    return 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400'
+    return 'bg-brand-pink-100 text-brand-pink-700 dark:bg-brand-pink-900/30 dark:text-brand-pink-400'
   }
   if (props.platform === 'zhipu') {
-    return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400'
+    return 'bg-brand-indigo-100 text-brand-indigo-700 dark:bg-brand-indigo-900/30 dark:text-brand-indigo-400'
   }
   if (props.platform === 'deepseek') {
-    return 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
+    return 'bg-brand-teal-100 text-brand-teal-700 dark:bg-brand-teal-900/30 dark:text-brand-teal-400'
   }
   if (props.platform === 'minimax') {
-    return 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'
+    return 'bg-brand-rose-100 text-brand-rose-700 dark:bg-brand-rose-900/30 dark:text-brand-rose-400'
   }
-  return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+  return 'bg-brand-blue-100 text-brand-blue-700 dark:bg-brand-blue-900/30 dark:text-brand-blue-400'
 })
 
 const typeClass = computed(() => {
   if (props.platform === 'anthropic') {
-    return 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
+    return 'bg-brand-orange-100 text-brand-orange-600 dark:bg-brand-orange-900/30 dark:text-brand-orange-400'
   }
   if (props.platform === 'openai') {
-    return 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+    return 'bg-brand-emerald-100 text-brand-emerald-600 dark:bg-brand-emerald-900/30 dark:text-brand-emerald-400'
   }
   if (props.platform === 'antigravity') {
-    return 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'
+    return 'bg-brand-purple-100 text-brand-purple-600 dark:bg-brand-purple-900/30 dark:text-brand-purple-400'
   }
   if (props.platform === 'grok') {
-    return 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300'
+    return 'bg-brand-zinc-100 text-brand-zinc-600 dark:bg-brand-zinc-800 dark:text-brand-zinc-300'
   }
   if (props.platform === 'kimi') {
-    return 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400'
+    return 'bg-brand-pink-100 text-brand-pink-600 dark:bg-brand-pink-900/30 dark:text-brand-pink-400'
   }
   if (props.platform === 'zhipu') {
-    return 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400'
+    return 'bg-brand-indigo-100 text-brand-indigo-600 dark:bg-brand-indigo-900/30 dark:text-brand-indigo-400'
   }
   if (props.platform === 'deepseek') {
-    return 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400'
+    return 'bg-brand-teal-100 text-brand-teal-600 dark:bg-brand-teal-900/30 dark:text-brand-teal-400'
   }
   if (props.platform === 'minimax') {
-    return 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400'
+    return 'bg-brand-rose-100 text-brand-rose-600 dark:bg-brand-rose-900/30 dark:text-brand-rose-400'
   }
-  return 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+  return 'bg-brand-blue-100 text-brand-blue-600 dark:bg-brand-blue-900/30 dark:text-brand-blue-400'
 })
 
 const planBadgeClass = computed(() => {

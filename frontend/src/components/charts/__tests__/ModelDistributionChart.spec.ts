@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 
 import ModelDistributionChart from '../ModelDistributionChart.vue'
+import DistributionBars from '../DistributionBars.vue'
 
 const messages: Record<string, string> = {
   'admin.dashboard.modelDistribution': 'Model Distribution',
@@ -40,12 +41,6 @@ vi.mock('vue-i18n', async () => {
   }
 })
 
-vi.mock('vue-chartjs', () => ({
-  Doughnut: {
-    props: ['data'],
-    template: '<div class="chart-data">{{ JSON.stringify(data) }}</div>',
-  },
-}))
 
 describe('ModelDistributionChart', () => {
   const modelStats = [
@@ -85,7 +80,8 @@ describe('ModelDistributionChart', () => {
       },
     })
 
-    const chartData = JSON.parse(wrapper.find('.chart-data').text())
+    const bars = wrapper.findComponent(DistributionBars)
+    const chartData = { labels: bars.props('labels'), datasets: [{ data: bars.props('values'), backgroundColor: bars.props('colors') }] }
     expect(chartData.labels).toEqual(['model-a', 'model-b'])
     expect(chartData.datasets[0].data).toEqual([1000, 500])
 
@@ -93,13 +89,7 @@ describe('ModelDistributionChart', () => {
     expect(rows[0].text()).toContain('model-a')
     expect(rows[1].text()).toContain('model-b')
 
-    const options = (wrapper.vm as any).$?.setupState.doughnutOptions
-    const label = options.plugins.tooltip.callbacks.label({
-      label: 'model-a',
-      raw: 1000,
-      dataset: { data: [1000, 500] },
-    })
-    expect(label).toBe('model-a: 1.00K (66.7%)')
+    expect(wrapper.find('.distribution-percent').text()).toBe('66.7%')
   })
 
   it('uses actual_cost and reorders rows in actual cost mode', () => {
@@ -115,7 +105,8 @@ describe('ModelDistributionChart', () => {
       },
     })
 
-    const chartData = JSON.parse(wrapper.find('.chart-data').text())
+    const bars = wrapper.findComponent(DistributionBars)
+    const chartData = { labels: bars.props('labels'), datasets: [{ data: bars.props('values'), backgroundColor: bars.props('colors') }] }
     expect(chartData.labels).toEqual(['model-b', 'model-a'])
     expect(chartData.datasets[0].data).toEqual([1.4, 0.2])
 
@@ -123,13 +114,7 @@ describe('ModelDistributionChart', () => {
     expect(rows[0].text()).toContain('model-b')
     expect(rows[1].text()).toContain('model-a')
 
-    const options = (wrapper.vm as any).$?.setupState.doughnutOptions
-    const label = options.plugins.tooltip.callbacks.label({
-      label: 'model-b',
-      raw: 1.4,
-      dataset: { data: [1.4, 0.2] },
-    })
-    expect(label).toBe('model-b: $1.40 (87.5%)')
+    expect(wrapper.find('.distribution-percent').text()).toBe('87.5%')
   })
 
   it('can hide account cost for user usage stats without account_cost', () => {
@@ -175,7 +160,8 @@ describe('ModelDistributionChart', () => {
     expect(rankingButton).toBeTruthy()
     await rankingButton!.trigger('click')
 
-    const chartData = JSON.parse(wrapper.find('.chart-data').text())
+    const bars = wrapper.findComponent(DistributionBars)
+    const chartData = { labels: bars.props('labels'), datasets: [{ data: bars.props('values'), backgroundColor: bars.props('colors') }] }
     expect(chartData.labels).toEqual([
       '#1 alpha',
       '#2 beta@example.com',
@@ -183,8 +169,8 @@ describe('ModelDistributionChart', () => {
       'Others',
     ])
     expect(chartData.datasets[0].data).toEqual([12, 8, 0, 10])
-    expect(chartData.datasets[0].backgroundColor[0]).toBe('#3b82f6')
-    expect(chartData.datasets[0].backgroundColor[3]).toBe('#94a3b8')
+    expect(chartData.datasets[0].backgroundColor[0]).toBe('#292824')
+    expect(chartData.datasets[0].backgroundColor[3]).toBe('#ddd8cd')
     expect(chartData.datasets[0].backgroundColor[3]).not.toBe(chartData.datasets[0].backgroundColor[0])
 
     const rows = wrapper.findAll('tbody tr')

@@ -485,6 +485,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { useChartTheme } from '@/components/charts/useChartTheme'
 import { useI18n } from 'vue-i18n'
 import {
   Chart as ChartJS,
@@ -531,16 +532,7 @@ const emit = defineEmits<{
 const loading = ref(false)
 const stats = ref<AccountUsageStatsResponse | null>(null)
 
-// Dark mode detection
-const isDarkMode = computed(() => {
-  return document.documentElement.classList.contains('dark')
-})
-
-// Chart colors
-const chartColors = computed(() => ({
-  text: isDarkMode.value ? '#e5e7eb' : '#374151',
-  grid: isDarkMode.value ? '#374151' : '#e5e7eb'
-}))
+const chartTheme = useChartTheme()
 
 // Line chart data
 const trendChartData = computed(() => {
@@ -552,29 +544,30 @@ const trendChartData = computed(() => {
       {
         label: t('usage.accountBilled') + ' (USD)',
         data: stats.value.history.map((h) => h.actual_cost),
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-        fill: true,
-        tension: 0.3,
+        borderColor: chartTheme.value.series(0),
+        backgroundColor: 'transparent',
+        fill: false,
+        tension: 0,
         yAxisID: 'y'
       },
       {
         label: t('usage.userBilled') + ' (USD)',
         data: stats.value.history.map((h) => h.user_cost),
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+        borderColor: chartTheme.value.series(1),
+        backgroundColor: 'transparent',
         fill: false,
-        tension: 0.3,
+        tension: 0,
         borderDash: [5, 5],
         yAxisID: 'y'
       },
       {
         label: t('admin.accounts.stats.requests'),
         data: stats.value.history.map((h) => h.requests),
-        borderColor: '#f97316',
-        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+        borderColor: chartTheme.value.series(2),
+        borderDash: [2, 3],
+        backgroundColor: 'transparent',
         fill: false,
-        tension: 0.3,
+        tension: 0,
         yAxisID: 'y1'
       }
     ]
@@ -584,6 +577,11 @@ const trendChartData = computed(() => {
 // Line chart options with dual Y-axis
 const lineChartOptions = computed(() => ({
   responsive: true,
+  animation: chartTheme.value.animation,
+  elements: {
+    point: { radius: 0, hoverRadius: 4, pointStyle: 'rect' as const },
+    line: { borderWidth: 2 }
+  },
   maintainAspectRatio: false,
   interaction: {
     intersect: false,
@@ -593,9 +591,9 @@ const lineChartOptions = computed(() => ({
     legend: {
       position: 'top' as const,
       labels: {
-        color: chartColors.value.text,
+        color: chartTheme.value.text,
         usePointStyle: true,
-        pointStyle: 'circle',
+        pointStyle: 'rect',
         padding: 15,
         font: {
           size: 11
@@ -603,6 +601,7 @@ const lineChartOptions = computed(() => ({
       }
     },
     tooltip: {
+      ...chartTheme.value.tooltip,
       callbacks: {
         label: (context: any) => {
           const label = context.dataset.label || ''
@@ -618,10 +617,10 @@ const lineChartOptions = computed(() => ({
   scales: {
     x: {
       grid: {
-        color: chartColors.value.grid
+        color: chartTheme.value.grid
       },
       ticks: {
-        color: chartColors.value.text,
+        color: chartTheme.value.text,
         font: {
           size: 10
         },
@@ -634,10 +633,10 @@ const lineChartOptions = computed(() => ({
       display: true,
       position: 'left' as const,
       grid: {
-        color: chartColors.value.grid
+        color: chartTheme.value.grid
       },
       ticks: {
-        color: '#3b82f6',
+        color: chartTheme.value.text,
         font: {
           size: 10
         },
@@ -646,7 +645,7 @@ const lineChartOptions = computed(() => ({
       title: {
         display: true,
         text: t('usage.accountBilled') + ' (USD)',
-        color: '#3b82f6',
+        color: chartTheme.value.text,
         font: {
           size: 11
         }
@@ -660,7 +659,7 @@ const lineChartOptions = computed(() => ({
         drawOnChartArea: false
       },
       ticks: {
-        color: '#f97316',
+        color: chartTheme.value.text,
         font: {
           size: 10
         },
@@ -669,7 +668,7 @@ const lineChartOptions = computed(() => ({
       title: {
         display: true,
         text: t('admin.accounts.stats.requests'),
-        color: '#f97316',
+        color: chartTheme.value.text,
         font: {
           size: 11
         }

@@ -352,7 +352,7 @@
                 <span class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-dark-700">
                   <i
                     class="block h-full rounded-full"
-                    :class="row.ignored ? 'bg-gray-400 dark:bg-gray-500' : 'bg-gradient-to-r from-red-400 to-red-500'"
+                    :class="row.ignored ? 'bg-gray-400 dark:bg-gray-500' : 'bg-[var(--ef-signal)]'"
                     :style="{ width: `${Math.max(2, row.rate * 100)}%` }"
                   ></i>
                 </span>
@@ -937,24 +937,24 @@ onBeforeUnmount(() => {
   height: 0.5rem;
   width: 0.5rem;
   flex: none;
-  border-radius: 9999px;
+  border-radius: 0;
 }
-/* Multi-stop green → yellow → red score bands */
-.health-score10 { background: #16a34a; }
-.health-score9  { background: #22c55e; }
-.health-score8  { background: #4ade80; }
-.health-score7  { background: #a3e635; }
-.health-score6  { background: #facc15; }
-.health-score5  { background: #fbbf24; }
-.health-score4  { background: #f59e0b; }
-.health-score3  { background: #f97316; }
-.health-score2  { background: #fb7185; }
-.health-score1  { background: #f87171; }
-.health-score0  { background: rgb(239, 67, 67); }
-.health-healthy  { background: #22c55e; }
-.health-warning  { background: #f59e0b; }
-.health-critical { background: #ef4444; }
-.health-unknown  { background: #9ca3af; }
+/* Score bands use neutral fills; attention states use the shared signal fill.
+   Existing numeric scores and tooltips continue to convey the exact result. */
+.health-score10 { background: var(--ef-ink); }
+.health-score9 { background: color-mix(in srgb, var(--ef-ink) 90%, var(--ef-panel)); }
+.health-score8 { background: color-mix(in srgb, var(--ef-ink) 80%, var(--ef-panel)); }
+.health-score7 { background: color-mix(in srgb, var(--ef-ink) 70%, var(--ef-panel)); }
+.health-score6 { background: color-mix(in srgb, var(--ef-signal) 60%, var(--ef-panel)); }
+.health-score5 { background: color-mix(in srgb, var(--ef-signal) 70%, var(--ef-panel)); }
+.health-score4 { background: color-mix(in srgb, var(--ef-signal) 80%, var(--ef-panel)); }
+.health-score3 { background: color-mix(in srgb, var(--ef-signal) 90%, var(--ef-panel)); }
+.health-score2, .health-score1 { background: var(--ef-signal); border: 1px solid var(--ef-ink); }
+.health-score0 { background: var(--ef-signal); outline: 1px solid var(--ef-ink); outline-offset: 1px; }
+.health-healthy { background: var(--ef-ink); }
+.health-warning { background: var(--ef-signal); }
+.health-critical { background: var(--ef-signal); outline: 1px solid var(--ef-ink); outline-offset: 1px; }
+.health-unknown { background: var(--ef-chip); border: 1px dashed var(--ef-ink-2); }
 .matrix-select {
   min-width: 10rem;
 }

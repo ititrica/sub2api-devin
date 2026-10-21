@@ -1,258 +1,53 @@
 <template>
-  <header class="glass sticky top-0 z-30 border-b border-gray-200/50 dark:border-dark-700/50">
-    <div class="flex h-16 items-center justify-between gap-2 px-2 sm:px-4 md:px-6">
-      <!-- Left: Mobile Menu Toggle + Page Title -->
-      <div class="flex shrink-0 items-center gap-2 sm:gap-4">
-        <button
-          @click="toggleMobileSidebar"
-          class="btn-ghost btn-icon lg:hidden"
-          :aria-label="t('common.toggleMenu')"
-        >
-          <Icon name="menu" size="md" />
-        </button>
-
-        <div class="hidden lg:block">
-          <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
-            {{ pageTitle }}
-          </h1>
-          <p v-if="pageDescription" class="text-xs text-gray-500 dark:text-dark-400">
-            {{ pageDescription }}
-          </p>
-        </div>
+  <header class="app-command-bar">
+    <div class="command-context">
+      <button class="command-button mobile-menu-button" :aria-label="t('common.toggleMenu')" :aria-expanded="appStore.mobileOpen" aria-controls="app-sidebar" @click="toggleMobileSidebar"><Icon name="menu" size="md" /></button>
+      <router-link :to="authStore.isAdmin ? '/admin/dashboard' : '/dashboard'" class="command-workspace">{{ authStore.isAdmin ? 'ADMIN' : 'WORKSPACE' }}</router-link>
+      <span class="command-divider" aria-hidden="true">/</span>
+      <span class="command-page">{{ pageTitle }}</span>
+    </div>
+    <div class="command-tools">
+      <a v-if="docUrl" :href="docUrl" target="_blank" rel="noopener noreferrer" class="command-button command-docs"><Icon name="book" size="sm" /><span>{{ t('nav.docs') }}</span></a>
+      <router-link v-if="user && modelPlazaEnabled" :to="{ path: '/model-plaza', query: { embedded: '1' } }" class="command-button" :title="t('nav.modelPlaza')" :aria-label="t('nav.modelPlaza')"><Icon name="grid" size="sm" /><span class="command-tool-label">{{ t('nav.modelPlaza') }}</span></router-link>
+      <div class="command-widget"><AnnouncementBell v-if="user" /></div>
+      <div class="command-widget command-locale"><LocaleSwitcher /></div>
+      <div v-if="user && subscriptionFeatureEnabled" class="command-widget command-subscriptions"><SubscriptionProgressMini /></div>
+      <div v-if="user" class="command-balance" :title="`${balanceAvailableText} ${formatHeaderMoney(availableBalance)} / ${balanceFrozenLabel}`">
+        <span>{{ t('common.balance') }}</span><strong>{{ formatHeaderMoney(availableBalance) }}</strong>
+        <small v-if="frozenBalance > 0">{{ balanceFrozenLabel }}</small>
       </div>
-
-      <!-- Right: Announcements + Docs + Language + Subscriptions + Balance + User Dropdown -->
-      <div class="flex min-w-0 items-center gap-1 sm:gap-3">
-        <!-- Announcement Bell -->
-        <AnnouncementBell v-if="user" />
-
-        <!-- Docs Link -->
-        <a
-          v-if="docUrl"
-          :href="docUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="hidden items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white sm:flex"
-        >
-          <Icon name="book" size="sm" />
-          <span class="hidden sm:inline">{{ t('nav.docs') }}</span>
-        </a>
-
-        <!-- Model Plaza Entry (icon only below sm) -->
-        <router-link
-          v-if="user && modelPlazaEnabled"
-          :to="{ path: '/model-plaza', query: { embedded: '1' } }"
-          :title="t('nav.modelPlaza')"
-          :aria-label="t('nav.modelPlaza')"
-          class="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-dark-400 dark:hover:bg-dark-800 dark:hover:text-white"
-        >
-          <Icon name="grid" size="sm" />
-          <span class="hidden sm:inline">{{ t('nav.modelPlaza') }}</span>
-        </router-link>
-
-        <!-- Language Switcher -->
-        <LocaleSwitcher />
-
-        <!-- Subscription Progress (for users with active subscriptions; not mounted at all when the feature is off) -->
-        <SubscriptionProgressMini v-if="user && subscriptionFeatureEnabled" />
-
-        <!-- Balance Display -->
-        <div
-          v-if="user"
-          class="group relative hidden items-center gap-2 rounded-xl bg-primary-50 px-3 py-1.5 dark:bg-primary-900/20 sm:flex"
-        >
-          <svg
-            class="h-4 w-4 text-primary-600 dark:text-primary-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
-            />
-          </svg>
-          <span class="text-sm font-semibold text-primary-700 dark:text-primary-300">
-            {{ formatHeaderMoney(availableBalance) }}
-          </span>
-          <span
-            v-if="frozenBalance > 0"
-            class="rounded-full bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-200"
-          >
-            {{ balanceFrozenLabel }}
-          </span>
-          <div
-            class="pointer-events-none absolute right-0 top-full mt-2 hidden w-56 rounded-lg border border-gray-200 bg-white p-3 text-xs shadow-lg group-hover:block dark:border-dark-700 dark:bg-dark-800"
-          >
-            <div class="flex items-center justify-between">
-              <span class="text-gray-500 dark:text-dark-400">{{ balanceAvailableText }}</span>
-              <span class="font-medium text-gray-900 dark:text-white">{{ formatHeaderMoney(availableBalance) }}</span>
+      <div v-if="user" ref="dropdownRef" class="user-menu">
+        <button class="user-trigger" :aria-label="t('common.userMenu')" :aria-expanded="dropdownOpen" aria-controls="header-user-menu" @click="toggleDropdown">
+          <span class="user-avatar"><img v-if="avatarUrl" :src="avatarUrl" :alt="displayName" /><span v-else>{{ userInitials }}</span></span>
+          <span class="user-identity"><strong>{{ displayName }}</strong><small>{{ t('admin.users.roles.' + user.role) }}</small></span>
+          <Icon name="chevronDown" size="sm" class="user-chevron" />
+        </button>
+        <transition name="dropdown">
+          <div v-if="dropdownOpen" id="header-user-menu" class="user-dropdown">
+            <div class="user-dropdown-identity"><strong>{{ displayName }}</strong><span>{{ user.email }}</span></div>
+            <dl class="user-balance-details">
+              <div><dt>{{ balanceAvailableText }}</dt><dd>{{ formatHeaderMoney(availableBalance) }}</dd></div>
+              <div v-if="frozenBalance > 0"><dt>{{ balanceFrozenText }}</dt><dd>{{ formatHeaderMoney(frozenBalance) }}</dd></div>
+              <div><dt>{{ balanceTotalText }}</dt><dd>{{ formatHeaderMoney(totalBalance) }}</dd></div>
+            </dl>
+            <div class="user-dropdown-section">
+              <router-link to="/profile" class="user-dropdown-item" @click="closeDropdown"><Icon name="user" size="sm" />{{ t('nav.profile') }}<span>↗</span></router-link>
+              <router-link to="/keys" class="user-dropdown-item" @click="closeDropdown"><Icon name="key" size="sm" />{{ t('nav.apiKeys') }}<span>↗</span></router-link>
+              <a v-if="docUrl" :href="docUrl" target="_blank" rel="noopener noreferrer" class="user-dropdown-item" @click="closeDropdown"><Icon name="book" size="sm" />{{ t('nav.docs') }}<span>↗</span></a>
+              <a v-if="authStore.isAdmin" href="https://github.com/Wei-Shaw/sub2api" target="_blank" rel="noopener noreferrer" class="user-dropdown-item" @click="closeDropdown"><Icon name="externalLink" size="sm" />{{ t('nav.github') }}<span>↗</span></a>
             </div>
-            <div class="mt-2 flex items-center justify-between">
-              <span class="text-gray-500 dark:text-dark-400">{{ balanceFrozenText }}</span>
-              <span class="font-medium text-amber-700 dark:text-amber-200">{{ formatHeaderMoney(frozenBalance) }}</span>
-            </div>
-            <div class="mt-2 border-t border-gray-100 pt-2 dark:border-dark-700">
-              <div class="flex items-center justify-between">
-                <span class="text-gray-500 dark:text-dark-400">{{ balanceTotalText }}</span>
-                <span class="font-semibold text-gray-900 dark:text-white">{{ formatHeaderMoney(totalBalance) }}</span>
-              </div>
-            </div>
+            <div v-if="contactInfo" class="user-support"><span>{{ t('common.contactSupport') }}</span><strong>{{ contactInfo }}</strong></div>
+            <div v-if="showOnboardingButton" class="user-dropdown-section"><button class="user-dropdown-item" @click="handleReplayGuide"><Icon name="book" size="sm" />{{ t('onboarding.restartTour') }}</button></div>
+            <div class="user-dropdown-section"><button class="user-dropdown-item" @click="handleLogout"><Icon name="arrowRight" size="sm" />{{ t('nav.logout') }}</button></div>
           </div>
-        </div>
-
-        <!-- User Dropdown -->
-        <div v-if="user" class="relative" ref="dropdownRef">
-          <button
-            @click="toggleDropdown"
-            class="flex items-center gap-2 rounded-xl p-1.5 transition-colors hover:bg-gray-100 dark:hover:bg-dark-800"
-            :aria-label="t('common.userMenu')"
-          >
-            <div class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 text-sm font-medium text-white shadow-sm">
-              <img
-                v-if="avatarUrl"
-                :src="avatarUrl"
-                :alt="displayName"
-                class="h-full w-full object-cover"
-              >
-              <span v-else>{{ userInitials }}</span>
-            </div>
-            <div class="hidden text-left md:block">
-              <div class="text-sm font-medium text-gray-900 dark:text-white">
-                {{ displayName }}
-              </div>
-              <div class="text-xs text-gray-500 dark:text-dark-400">
-                {{ t('admin.users.roles.' + user.role) }}
-              </div>
-            </div>
-            <Icon name="chevronDown" size="sm" class="hidden text-gray-400 md:block" />
-          </button>
-
-          <!-- Dropdown Menu -->
-          <transition name="dropdown">
-            <div v-if="dropdownOpen" class="dropdown right-0 mt-2 w-56">
-              <!-- User Info -->
-              <div class="border-b border-gray-100 px-4 py-3 dark:border-dark-700">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ displayName }}
-                </div>
-                <div class="text-xs text-gray-500 dark:text-dark-400">{{ user.email }}</div>
-              </div>
-
-              <!-- Balance (mobile only) -->
-              <div class="border-b border-gray-100 px-4 py-2 dark:border-dark-700 sm:hidden">
-                <div class="text-xs text-gray-500 dark:text-dark-400">
-                  {{ t('common.balance') }}
-                </div>
-                <div class="text-sm font-semibold text-primary-600 dark:text-primary-400">
-                  {{ formatHeaderMoney(availableBalance) }}
-                </div>
-                <div v-if="frozenBalance > 0" class="mt-1 text-xs text-amber-600 dark:text-amber-300">
-                  {{ balanceFrozenText }} {{ formatHeaderMoney(frozenBalance) }}
-                </div>
-              </div>
-
-              <div class="py-1">
-                <router-link to="/profile" @click="closeDropdown" class="dropdown-item">
-                  <Icon name="user" size="sm" />
-                  {{ t('nav.profile') }}
-                </router-link>
-
-                <router-link to="/keys" @click="closeDropdown" class="dropdown-item">
-                  <Icon name="key" size="sm" />
-                  {{ t('nav.apiKeys') }}
-                </router-link>
-
-                <a
-                  v-if="authStore.isAdmin"
-                  href="https://github.com/Wei-Shaw/sub2api"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  @click="closeDropdown"
-                  class="dropdown-item"
-                >
-                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
-                    />
-                  </svg>
-                  {{ t('nav.github') }}
-                </a>
-
-              </div>
-
-              <!-- Contact Support (only show if configured) -->
-              <div
-                v-if="contactInfo"
-                class="border-t border-gray-100 px-4 py-2.5 dark:border-dark-700"
-              >
-                <div class="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                  <svg
-                    class="h-3.5 w-3.5 flex-shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"
-                    />
-                  </svg>
-                  <span>{{ t('common.contactSupport') }}:</span>
-                  <span class="font-medium text-gray-700 dark:text-gray-300">{{
-                    contactInfo
-                  }}</span>
-                </div>
-              </div>
-
-              <div v-if="showOnboardingButton" class="border-t border-gray-100 py-1 dark:border-dark-700">
-                <button @click="handleReplayGuide" class="dropdown-item w-full">
-                  <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                      d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 14a1 1 0 110 2 1 1 0 010-2zm1.07-7.75c0-.6-.49-1.25-1.32-1.25-.7 0-1.22.4-1.43 1.02a1 1 0 11-1.9-.62A3.41 3.41 0 0111.8 5c2.02 0 3.25 1.4 3.25 2.9 0 2-1.83 2.55-2.43 3.12-.43.4-.47.75-.47 1.23a1 1 0 01-2 0c0-1 .16-1.82 1.1-2.7.69-.64 1.82-1.05 1.82-2.06z"
-                    />
-                  </svg>
-                  {{ $t('onboarding.restartTour') }}
-                </button>
-              </div>
-
-              <div class="border-t border-gray-100 py-1 dark:border-dark-700">
-                <button
-                  @click="handleLogout"
-                  class="dropdown-item w-full text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-                >
-                  <svg
-                    class="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
-                    />
-                  </svg>
-                  {{ t('nav.logout') }}
-                </button>
-              </div>
-            </div>
-          </transition>
-        </div>
+        </transition>
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore, useAuthStore, useOnboardingStore } from '@/stores'
@@ -337,13 +132,6 @@ const pageTitle = computed(() => {
   return (route.meta.title as string) || ''
 })
 
-const pageDescription = computed(() => {
-  const descKey = routeMetaKeys.value.descriptionKey
-  if (descKey) {
-    return t(descKey)
-  }
-  return (route.meta.description as string) || ''
-})
 
 function toggleMobileSidebar() {
   appStore.toggleMobileSidebar()
@@ -351,7 +139,20 @@ function toggleMobileSidebar() {
 
 function toggleDropdown() {
   dropdownOpen.value = !dropdownOpen.value
+  if (dropdownOpen.value) {
+    void nextTick(() => dropdownRef.value?.querySelector<HTMLElement>('.user-dropdown a, .user-dropdown button')?.focus())
+  }
 }
+
+function onHeaderKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape' && dropdownOpen.value) {
+    closeDropdown()
+    dropdownRef.value?.querySelector<HTMLElement>('.user-trigger')?.focus()
+  }
+}
+
+watch(() => route.fullPath, closeDropdown)
+
 
 function closeDropdown() {
   dropdownOpen.value = false
@@ -386,22 +187,66 @@ function handleClickOutside(event: MouseEvent) {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  document.addEventListener('keydown', onHeaderKeydown)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('keydown', onHeaderKeydown)
 })
 </script>
 
 <style scoped>
-.dropdown-enter-active,
-.dropdown-leave-active {
-  transition: all 0.2s ease;
-}
-
-.dropdown-enter-from,
-.dropdown-leave-to {
-  opacity: 0;
-  transform: scale(0.95) translateY(-4px);
-}
+.app-command-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 18px; height: 64px; padding: 0 28px; background: #191918; color: #f3f1e9; border-bottom: 1px solid #3a3935; }
+.command-context { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.command-workspace { flex-shrink: 0; background: var(--ef-signal); color: var(--ef-on-signal); font: 650 9px var(--ef-font-ui); font-stretch: 125%; letter-spacing: .12em; padding: 4px 9px; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%); }
+.command-divider { color: #75746e; font-weight: 300; }
+.command-page { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 500; }
+.command-tools { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+.command-button { min-width: 38px; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; color: #d8d6cf; font-size: 11px; transition: background 160ms var(--ef-ease-mech); }
+.command-button:hover, .user-trigger:hover { background: #36352f; color: #fff; }
+.command-widget { min-width: 0; }
+.command-widget :deep(> div > button) { min-height: 40px; color: #d8d6cf; background: transparent; }
+.command-widget :deep(> div > button:hover) { background: #36352f; }
+.command-widget :deep(> div > button svg), .command-widget :deep(> div > button span) { color: inherit; }
+.command-widget :deep(> div > .absolute) { max-width: calc(100vw - 32px); }
+.command-widget :deep(.animate-ping) { animation: none; }
+.command-widget :deep(.bg-red-500) { background: var(--ef-signal); }
+.command-balance { display: grid; gap: 0; padding: 0 14px; margin: 0 2px; border-left: 1px solid #44433c; border-right: 1px solid #44433c; }
+.command-balance > span { font-size: 9px; color: #aaa89f; }
+.command-balance strong { font: 600 16px var(--ef-font-ui); font-stretch: 112%; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.command-balance small { font-size: 8px; color: #c9c7bf; }
+.user-menu { position: relative; }
+.user-trigger { display: flex; align-items: center; gap: 9px; padding: 4px 5px; min-height: 44px; color: inherit; }
+.user-avatar { display: flex; justify-content: center; align-items: center; width: 32px; height: 32px; flex: 0 0 32px; background: #e7e3d7; color: #24241e; font: 650 12px var(--ef-font-ui); overflow: hidden; }
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.user-identity { display: grid; text-align: left; }
+.user-identity strong { max-width: 100px; overflow: hidden; text-overflow: ellipsis; font-size: 11px; font-weight: 600; }
+.user-identity small { color: #aaa89f; font-size: 9px; }
+.user-chevron { color: #aaa89f; }
+.user-dropdown { position: absolute; right: 0; top: calc(100% + 12px); width: 276px; max-width: calc(100vw - 24px); max-height: calc(100dvh - 80px); overflow-y: auto; background: var(--ef-panel); color: var(--ef-ink); border: 1px solid var(--ef-rule); border-top: 3px solid var(--ef-ink); }
+.user-dropdown-identity { display: grid; gap: 3px; padding: 18px; overflow-wrap: anywhere; }
+.user-dropdown-identity strong { font-size: 15px; }
+.user-dropdown-identity span { font-size: 11px; color: var(--ef-ink-2); }
+.user-balance-details { background: var(--ef-paper); padding: 12px 18px; border-block: 1px solid var(--ef-rule); }
+.user-balance-details > div { display: flex; justify-content: space-between; gap: 10px; padding-block: 3px; font-size: 11px; }
+.user-balance-details dt { color: var(--ef-ink-2); }
+.user-balance-details dd { font-family: var(--ef-font-ui); font-variant-numeric: tabular-nums; font-weight: 600; }
+.user-dropdown-section { padding: 5px; border-top: 1px solid var(--ef-rule); }
+.user-dropdown-item { display: flex; align-items: center; width: 100%; min-height: 44px; gap: 10px; padding: 9px 13px; font-size: 12px; text-align: left; }
+.user-dropdown-item span:last-child { margin-left: auto; }
+.user-dropdown-item:hover { background: var(--ef-chip); }
+.user-support { display: grid; gap: 4px; padding: 12px 18px; border-top: 1px solid var(--ef-rule); overflow-wrap: anywhere; }
+.user-support span { color: var(--ef-ink-2); font-size: 10px; }
+.user-support strong { font-size: 12px; font-weight: 500; }
+.app-command-bar :is(button, a):focus-visible { outline: 2px solid currentColor; outline-offset: -3px; }
+.mobile-menu-button { display: none; }
+.dropdown-enter-active { transition: opacity 220ms var(--ef-ease-snap), transform 220ms var(--ef-ease-snap); }
+.dropdown-leave-active { transition: opacity 150ms var(--ef-ease-mech), transform 150ms var(--ef-ease-mech); }
+.dropdown-enter-from, .dropdown-leave-to { opacity: 0; transform: translateY(-8px); }
+@media (max-width: 1279px) { .user-identity, .user-chevron, .command-tool-label, .command-docs { display: none; } .app-command-bar { padding-inline: 20px; } }
+@media (max-width: 1023px) { .mobile-menu-button { display: flex; } .app-command-bar { padding-inline: 12px; gap: 10px; } .command-context { gap: 10px; } }
+@media (max-width: 639px) { .app-command-bar { gap: 4px; padding-inline: 8px; } .command-tools { gap: 0; } .command-workspace, .command-divider, .command-balance { display: none; } .command-context { gap: 6px; } .command-page { max-width: 88px; font-size: 11px; } .command-button { min-width: 36px; padding-inline: 6px; } .command-widget :deep(> div > button) { padding-inline: 6px; } .user-trigger { gap: 0; padding-inline: 4px; } .user-avatar { width: 30px; height: 30px; flex-basis: 30px; } }
+@media (max-width: 639px) { .command-subscriptions :deep(> div > .absolute) { position: fixed; right: 12px; top: 66px; margin-top: 0; } }
+@media (prefers-reduced-motion: reduce) { .app-command-bar *, .dropdown-enter-active, .dropdown-leave-active { transition: none; } }
 </style>

@@ -1,5 +1,12 @@
 export default {
   common: {
+    analytics: {
+      series: 'series',
+      trend: 'Usage trend', metric: 'Chart metric', cacheRate: 'Cache hit rate',
+      emptyTrend: 'Your request and token history will appear here.',
+      points: '{count} time intervals', analysis: 'Usage analysis', records: 'Request details',
+      distribution: 'Usage distribution', filters: 'Filter records',
+    },
     loading: 'Loading...',
     submitting: 'Submitting...',
     justNow: 'just now',

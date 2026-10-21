@@ -1,6 +1,7 @@
 {
   "name": "sub2api-frontend",
   "private": true,
+  "packageManager": "pnpm@10.34.7",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -13,7 +14,8 @@
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "dev:mock": "vite --config vite.config.ts --mode mock --host 127.0.0.1"
   },
   "dependencies": {
     "@airwallex/components-sdk": "^1.30.2",

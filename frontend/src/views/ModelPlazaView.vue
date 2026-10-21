@@ -5,9 +5,9 @@
   </AppLayout>
 
   <!-- 独立形态:自带导航条(logo/站名 + 登录/回后台) -->
-  <div v-else class="min-h-screen bg-gray-50 dark:bg-dark-950">
+  <div v-else class="plaza-page">
     <PlazaNavBar />
-    <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <main class="plaza-main">
       <ModelPlazaContent :response="data" :loading="loading" :error="loadFailed" />
     </main>
   </div>
@@ -46,3 +46,9 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.plaza-page { min-height: 100dvh; background: var(--ef-paper); color: var(--ef-ink); }
+.plaza-main { width: min(100%, 1440px); margin-inline: auto; padding: 48px clamp(20px, 4vw, 64px) 64px; }
+@media (max-width: 600px) { .plaza-main { padding-top: 32px; } }
+</style>

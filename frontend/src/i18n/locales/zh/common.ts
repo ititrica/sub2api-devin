@@ -1,5 +1,12 @@
 export default {
   common: {
+    analytics: {
+      series: '项',
+      trend: '用量趋势', metric: '图表指标', cacheRate: '缓存命中率',
+      emptyTrend: '发起请求后，这里将展示请求与 Token 用量变化。',
+      points: '{count} 个时间区间', analysis: '用量分析', records: '请求明细',
+      distribution: '用量分布', filters: '筛选记录',
+    },
     loading: '加载中...',
     submitting: '提交中...',
     justNow: '刚刚',

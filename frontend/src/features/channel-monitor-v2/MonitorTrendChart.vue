@@ -16,13 +16,13 @@
       </div>
       <div class="flex w-full min-w-0 flex-wrap items-center justify-end gap-2 text-xs text-gray-500 dark:text-gray-400 sm:w-auto">
         <span class="flex shrink-0 items-center gap-1">
-          <span class="h-2 w-2 rounded-full bg-red-500"></span>{{ t('channelMonitorV2.chart.errorLegend') }}
+          <span class="h-2 w-4" :style="{ background: chartTheme.series(0) }"></span>{{ t('channelMonitorV2.chart.errorLegend') }}
         </span>
         <span class="flex shrink-0 items-center gap-1">
-          <span class="h-2 w-2 rounded-full bg-emerald-500"></span>{{ t('channelMonitorV2.chart.cacheLegend') }}
+          <span class="h-2 w-4" :style="{ background: chartTheme.series(1) }"></span>{{ t('channelMonitorV2.chart.cacheLegend') }}
         </span>
         <span class="flex shrink-0 items-center gap-1">
-          <span class="h-2 w-2 rounded-full bg-sky-500"></span>{{ t('channelMonitorV2.chart.ttftLegend') }}
+          <span class="h-2 w-4" :style="{ background: chartTheme.series(2) }"></span>{{ t('channelMonitorV2.chart.ttftLegend') }}
         </span>
         <span class="badge badge-gray shrink-0">{{ bucketLabel }}</span>
         <button
@@ -60,6 +60,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { computed, ref, watch } from 'vue'
+import { useChartTheme } from '@/components/charts/useChartTheme'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -98,9 +99,7 @@ const chartRef = ref<HTMLElement | null>(null)
 const zoom = ref<ZoomState>(resetZoom())
 const zoomed = computed(() => isZoomed(zoom.value))
 
-const isDark = computed(() =>
-  typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
-)
+const chartTheme = useChartTheme()
 
 const bucketLabel = computed(() => {
   const seconds = props.coverage?.bucket_seconds || 60
@@ -131,12 +130,11 @@ const chartData = computed(() => {
       {
         label: t('channelMonitorV2.chart.errorDataset'),
         data: errorRates,
-        borderColor: '#ef4444',
-        backgroundColor: 'rgba(239, 67, 67, 0.10)',
+        borderColor: chartTheme.value.series(0),
+        backgroundColor: 'transparent',
         yAxisID: 'yPct',
-        tension: 0.4,
-        cubicInterpolationMode: 'monotone' as const,
-        fill: 'origin' as const,
+        tension: 0,
+        fill: false,
         pointRadius: 0,
         pointHoverRadius: 4,
         pointHitRadius: 10,
@@ -145,11 +143,11 @@ const chartData = computed(() => {
       {
         label: t('channelMonitorV2.chart.cacheDataset'),
         data: cacheRates,
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+        borderColor: chartTheme.value.series(1),
+        borderDash: [6, 3],
+        backgroundColor: 'transparent',
         yAxisID: 'yPct',
-        tension: 0.4,
-        cubicInterpolationMode: 'monotone' as const,
+        tension: 0,
         fill: false,
         pointRadius: 0,
         pointHoverRadius: 4,
@@ -159,11 +157,11 @@ const chartData = computed(() => {
       {
         label: t('channelMonitorV2.chart.ttftDataset'),
         data: ttftP50,
-        borderColor: '#0ea5e9',
-        backgroundColor: 'rgba(14, 165, 233, 0.08)',
+        borderColor: chartTheme.value.series(2),
+        borderDash: [2, 3],
+        backgroundColor: 'transparent',
         yAxisID: 'yTtft',
-        tension: 0.4,
-        cubicInterpolationMode: 'monotone' as const,
+        tension: 0,
         fill: false,
         pointRadius: 0,
         pointHoverRadius: 4,
@@ -205,18 +203,20 @@ function smoothTrend(values: Array<number | null>): Array<number | null> {
 }
 
 const chartOptions = computed(() => {
-  const text = isDark.value ? '#9ca3af' : '#6b7280'
-  const grid = isDark.value ? '#374151' : '#f3f4f6'
-  const tooltipBg = isDark.value ? '#1f2937' : '#ffffff'
-  const tooltipTitle = isDark.value ? '#f3f4f6' : '#111827'
-  const tooltipBody = isDark.value ? '#d1d5db' : '#4b5563'
+  const text = chartTheme.value.text
+  const grid = chartTheme.value.grid
+  const tooltipBg = chartTheme.value.panel
+  const tooltipTitle = chartTheme.value.ink
+  const tooltipBody = chartTheme.value.text
   return {
     responsive: true,
+    animation: chartTheme.value.animation,
     maintainAspectRatio: false,
     interaction: { mode: 'index' as const, intersect: false },
     plugins: {
       legend: { display: false },
       tooltip: {
+        ...chartTheme.value.tooltip,
         backgroundColor: tooltipBg,
         titleColor: tooltipTitle,
         bodyColor: tooltipBody,

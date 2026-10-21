@@ -1,64 +1,24 @@
 <template>
-  <div
-    class="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4 dark:from-dark-900 dark:to-dark-800"
-  >
-    <div class="w-full max-w-2xl">
-      <!-- Logo & Title -->
-      <div class="mb-8 text-center">
-        <div
-          class="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg"
-        >
-          <Icon name="cog" size="xl" class="text-white" />
+  <div class="setup-page">
+    <div class="setup-workspace">
+      <header class="setup-heading">
+        <div>
+          <p class="ef-eyebrow">// INSTALLATION</p>
+          <h1>{{ t('setup.title') }}</h1>
+          <p class="setup-description">{{ t('setup.description') }}</p>
         </div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ t('setup.title') }}</h1>
-        <p class="mt-2 text-gray-500 dark:text-dark-400">{{ t('setup.description') }}</p>
-      </div>
+        <span class="setup-step-count">{{ String(currentStep + 1).padStart(2, '0') }} / {{ String(steps.length).padStart(2, '0') }}</span>
+      </header>
 
-      <!-- Progress Steps -->
-      <div class="mb-8">
-        <div class="flex items-center justify-center">
-          <template v-for="(step, index) in steps" :key="step.id">
-            <div class="flex items-center">
-              <div
-                :class="[
-                  'flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all',
-                  currentStep > index
-                    ? 'bg-primary-500 text-white'
-                    : currentStep === index
-                      ? 'bg-primary-500 text-white ring-4 ring-primary-100 dark:ring-primary-900'
-                      : 'bg-gray-200 text-gray-500 dark:bg-dark-700 dark:text-dark-400'
-                ]"
-              >
-                <Icon
-                  v-if="currentStep > index"
-                  name="check"
-                  size="md"
-                  :stroke-width="2"
-                />
-                <span v-else>{{ index + 1 }}</span>
-              </div>
-              <span
-                class="ml-2 hidden text-sm font-medium sm:inline"
-                :class="
-                  currentStep >= index
-                    ? 'text-gray-900 dark:text-white'
-                    : 'text-gray-400 dark:text-dark-500'
-                "
-              >
-                {{ step.title }}
-              </span>
-            </div>
-            <div
-              v-if="index < steps.length - 1"
-              class="mx-2 h-0.5 w-6 sm:mx-3 sm:w-12"
-              :class="currentStep > index ? 'bg-primary-500' : 'bg-gray-200 dark:bg-dark-700'"
-            ></div>
-          </template>
-        </div>
-      </div>
+      <ol class="setup-steps" :aria-label="t('setup.title')">
+        <li v-for="(step, index) in steps" :key="step.id" :class="{ 'is-current': currentStep === index, 'is-complete': currentStep > index }" :aria-current="currentStep === index ? 'step' : undefined">
+          <span class="setup-step-number"><Icon v-if="currentStep > index" name="check" size="sm" /><span v-else>{{ String(index + 1).padStart(2, '0') }}</span></span>
+          <span>{{ step.title }}</span>
+        </li>
+      </ol>
 
       <!-- Step Content -->
-      <div class="rounded-2xl bg-white p-8 shadow-xl dark:bg-dark-800">
+      <div class="setup-content">
         <!-- Step 1: Database -->
         <div v-if="currentStep === 0" class="space-y-6">
           <div class="mb-6 text-center">
@@ -684,3 +644,22 @@ async function waitForServiceRestart() {
   errorMessage.value = t('setup.status.timeout')
 }
 </script>
+
+<style scoped>
+.setup-page { min-height: 100dvh; display: flex; align-items: flex-start; justify-content: center; padding: 72px 32px; background: var(--ef-paper); color: var(--ef-ink); }
+.setup-workspace { display: grid; grid-template-columns: 240px minmax(0, 640px); gap: 36px; width: 100%; max-width: 1000px; }
+.setup-heading { grid-column: 1 / -1; display: flex; align-items: end; justify-content: space-between; gap: 24px; padding-bottom: 28px; border-bottom: 1px solid var(--ef-rule); }
+.setup-heading .ef-eyebrow { margin-bottom: 12px; color: var(--ef-ink-2); }
+.setup-heading h1 { font-size: clamp(30px, 4vw, 44px); font-weight: 750; letter-spacing: -.04em; line-height: 1.2; }
+.setup-description { margin-top: 12px; color: var(--ef-ink-2); font-size: 13px; }
+.setup-step-count { flex-shrink: 0; font: 600 22px var(--ef-font-ui); font-stretch: 125%; font-variant-numeric: tabular-nums; letter-spacing: .05em; }
+.setup-steps { display: flex; flex-direction: column; gap: 1px; align-self: start; margin: 0; padding: 0; list-style: none; border-top: 2px solid var(--ef-ink); }
+.setup-steps li { display: flex; align-items: center; gap: 16px; min-height: 64px; padding: 12px 16px; border-bottom: 1px solid var(--ef-rule); color: var(--ef-ink-2); font-size: 13px; }
+.setup-steps li.is-current { background: var(--ef-signal); color: var(--ef-on-signal); font-weight: 700; }
+.setup-steps li.is-complete { color: var(--ef-ink); }
+.setup-step-number { display: flex; align-items: center; justify-content: center; width: 24px; flex-shrink: 0; font: 650 15px var(--ef-font-ui); font-stretch: 125%; font-variant-numeric: tabular-nums; }
+.setup-content { min-width: 0; border-top: 3px solid var(--ef-ink); background: var(--ef-panel); padding: 30px; }
+.setup-content :deep(.text-center) { text-align: left; }
+.setup-content :deep(h2) { font-size: 24px; font-weight: 700; letter-spacing: -.02em; }
+@media (max-width: 767px) { .setup-page { padding: 36px 16px; } .setup-workspace { grid-template-columns: 1fr; gap: 24px; } .setup-heading { align-items: start; } .setup-step-count { font-size: 16px; } .setup-steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); } .setup-steps li { gap: 10px; min-height: 52px; padding: 10px 12px; font-size: 12px; } .setup-content { padding: 24px 18px; } }
+</style>
